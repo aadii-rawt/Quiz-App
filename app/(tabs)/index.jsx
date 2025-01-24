@@ -63,6 +63,7 @@ export default function HomeScreen() {
         </TouchableOpacity>
       </View>
       
+      
       <ScrollView style={styles.content}>
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Current Quizzes</Text>
