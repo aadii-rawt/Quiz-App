@@ -1,5 +1,5 @@
-import { Link } from 'expo-router';
-import React from 'react';
+import { Link, useNavigation } from 'expo-router';
+import React, { useEffect } from 'react';
 import {
   StyleSheet,
   View,
@@ -54,6 +54,15 @@ export default function HomeScreen() {
     </TouchableOpacity>
   );
 
+  const user = false
+  const navigation = useNavigation()
+  useEffect(() => {
+    
+    if (!user) {
+      navigation.navigate('login')
+    }
+  },[user,navigation])
+  
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
