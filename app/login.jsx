@@ -1,53 +1,78 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { Link } from 'expo-router';
+import { RecaptchaVerifier, signInWithPhoneNumber } from 'firebase/auth';
+import { auth } from '../firebase';
+import OtpVerification from './otpVerification';
 
 const Login = () => {
+
+  const [phoneNumber, setPhoneNumber] = useState("")
+  const [confirmation, setConfirmation] = useState(null);
+
+  const handleLogin = async () => {
+    try {
+      const recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+        'size': 'normal',
+        'callback': (response) => {
+          console.log('Recaptcha verified:', response);
+        },
+      });
+
+      const confirmationResult = await signInWithPhoneNumber(auth, phoneNumber, recaptchaVerifier);
+      setConfirmation(confirmationResult);
+      console.log(confirmationResult);
+    } catch (error) {
+      alert('Error', error.message);
+      console.log(error);
+    }
+  }
+
   return (
     <View style={styles.container}>
-      <Text style={styles.heading}>Login here</Text>
-      <Text style={styles.subheading}>Welcome back you've been missed!</Text>
+      {!confirmation ?
+        <>
+          <Text style={styles.heading}>Login here</Text>
+          <Text style={styles.subheading}>Welcome back you've been missed!</Text>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        placeholderTextColor="#B0B0B0"
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        placeholderTextColor="#B0B0B0"
-        secureTextEntry
-      />
+          <TextInput
+            style={styles.input}
+            placeholder="Phone Number"
+            value={phoneNumber}
+            onChangeText={(text) => setPhoneNumber(text)}
+            placeholderTextColor="#B0B0B0"
+          />
 
-      <TouchableOpacity>
-        <Text style={styles.forgotPassword}>Forgot your password?</Text>
-      </TouchableOpacity>
+          <TouchableOpacity>
+            <Text style={styles.forgotPassword}>Forgot your password?</Text>
+          </TouchableOpacity>
+          <View id="recaptcha-container" />
+          <TouchableOpacity onPress={handleLogin} style={styles.signInButton}>
+            <Text style={styles.signInText}>Sign in</Text>
+          </TouchableOpacity>
 
-      <TouchableOpacity style={styles.signInButton}>
-        <Text style={styles.signInText}>Sign in</Text>
-      </TouchableOpacity>
+          <TouchableOpacity>
+            {/* <Text> */}
+            <Link href='/signup' style={styles.createAccount}>Create new account</Link>
+            {/* </Text> */}
+          </TouchableOpacity>
 
-      <TouchableOpacity>
-        {/* <Text> */}
-        <Link href='/signup' style={styles.createAccount}>Create new account</Link>
-        {/* </Text> */}
-      </TouchableOpacity>
+          <Text style={styles.orContinueWith}>Or continue with</Text>
 
-      <Text style={styles.orContinueWith}>Or continue with</Text>
-
-      <View style={styles.socialIconsContainer}>
-        <TouchableOpacity style={styles.iconButton}>
-          <FontAwesome name="google" size={24} color="black" />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.iconButton}>
-          <FontAwesome name="facebook" size={24} color="black" />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.iconButton}>
-          <FontAwesome name="apple" size={24} color="black" />
-        </TouchableOpacity>
-      </View>
+          <View style={styles.socialIconsContainer}>
+            <TouchableOpacity style={styles.iconButton}>
+              <FontAwesome name="google" size={24} color="black" />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.iconButton}>
+              <FontAwesome name="facebook" size={24} color="black" />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.iconButton}>
+              <FontAwesome name="apple" size={24} color="black" />
+            </TouchableOpacity>
+          </View>
+        </> :
+        <OtpVerification confirmation={confirmation} phoneNumber={phoneNumber} type='login' />}
     </View>
   );
 };
@@ -105,7 +130,7 @@ const styles = StyleSheet.create({
   createAccount: {
     fontSize: 14,
     color: '#1D4ED8',
-    textDecorationLine : "underline",
+    textDecorationLine: "underline",
     paddingBottom: 20,
   },
   orContinueWith: {
