@@ -5,8 +5,11 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import Slider from '../../components/Slider';
 import ActiveQuiz from '../../components/ActiveQuiz';
 import CurrentCompetion from '../../components/CurrentCompetion'
+import { useNavigation } from 'expo-router';
 
 const Home = () => {
+
+    const navigation = useNavigation();
 
     return (
         <ScrollView style={styles.container}>
@@ -45,7 +48,9 @@ const Home = () => {
                 <TouchableOpacity style={[styles.button, {
                     // background: 'rgb(135, 67, 254)',
                     backgroundColor: 'linear-gradient(0deg, rgba(135, 67, 254, 1) 35%, rgba(161, 127, 220, 1) 100%)'
-                }]}>
+                }]}
+                    onPress={() => navigation.navigate('soloQuiz')}
+                >
                     <FontAwesome5 name="user-alt" size={24} color="#fff" />
                     <Text style={styles.buttonText}>Solo Mode</Text>
                 </TouchableOpacity>
