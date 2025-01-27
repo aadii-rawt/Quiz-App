@@ -1,0 +1,128 @@
+import { StyleSheet, Text, View, FlatList, TouchableOpacity, Image } from 'react-native';
+import React from 'react';
+import Icon from "react-native-vector-icons/Ionicons";
+
+const data = [
+    {
+        id: "1",
+        title: "Beginner Math Quiz",
+        author: "Mahmud Saimon",
+        points: "500",
+        time: "5min",
+        image: "https://images.pexels.com/photos/3165335/pexels-photo-3165335.jpeg",
+    },
+    {
+        id: "2",
+        title: "Intermediate Math Quiz",
+        author: "Mahmud Saimon",
+        points: "700",
+        time: "10min",
+        image: "https://images.pexels.com/photos/3165335/pexels-photo-3165335.jpeg",
+    },
+];
+
+const CurrentCompetion = () => {
+
+    const renderItem = ({ item }) => (
+        <View style={styles.card}>
+            <Image source={{ uri: item.image }} style={styles.thumbnail} />
+            <View style={styles.info}>
+                <Text style={styles.title}>{item.title}</Text>
+                <Text style={styles.author}>by {item.author}</Text>
+                <View style={styles.details}>
+                    <View style={styles.detailItem}>
+                        <Icon name="diamond" size={16} color="#7d7d7d" />
+                        <Text style={styles.detailText}>{item.points}</Text>
+                    </View>
+                    <View style={styles.detailItem}>
+                        <Icon name="time" size={16} color="#7d7d7d" />
+                        <Text style={styles.detailText}>{item.time}</Text>
+                    </View>
+                </View>
+            </View>
+            <TouchableOpacity style={styles.playButton}>
+                <Icon name="play-circle" size={30} color="#fff" />
+            </TouchableOpacity>
+        </View>
+    );
+
+    return (
+        <View style={styles.container}>
+            <Text style={{ fontSize: 16, fontWeight: 'bold', marginBottom: 10 }}>Current Competitions</Text>
+            <FlatList
+                data={data}
+                renderItem={renderItem}
+                keyExtractor={(item) => item.id}
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.sliderContainer}
+            />
+        </View>
+    );
+};
+
+export default CurrentCompetion;
+
+const styles = StyleSheet.create({
+    container: {
+        paddingHorizontal: 10,
+        paddingVertical: 5,
+        marginTop: 5,
+    },
+    sliderContainer: {
+        paddingHorizontal: 0,
+        marginBottom: 5
+    },
+    card: {
+        width: 250,
+        backgroundColor: "#fff",
+        borderRadius: 12,
+        marginRight: 10,
+        padding: 12,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+    },
+    thumbnail: {
+        width: "100%",
+        height: 120,
+        borderRadius: 8,
+        marginBottom: 10,
+    },
+    info: {
+        flex: 1,
+    },
+    title: {
+        fontSize: 16,
+        fontWeight: "bold",
+        color: "#333",
+        marginBottom: 5,
+    },
+    author: {
+        fontSize: 14,
+        color: "#777",
+        marginBottom: 5,
+    },
+    details: {
+        flexDirection: "row",
+        marginTop: 4,
+    },
+    detailItem: {
+        flexDirection: "row",
+        alignItems: "center",
+        marginRight: 12,
+    },
+    detailText: {
+        fontSize: 12,
+        color: "#777",
+        marginLeft: 4,
+    },
+    playButton: {
+        backgroundColor: "#ffaa33",
+        borderRadius: 25,
+        padding: 5,
+        alignSelf: 'flex-start',
+        marginTop: 10,
+    },
+});
