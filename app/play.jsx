@@ -30,7 +30,6 @@ const Play = () => {
     const [showScore, setShowScore] = useState(false);
     const [timeLeft, setTimeLeft] = useState(10);
 
-    // Timer logic
     useEffect(() => {
         if (timeLeft === 0) {
             goToNextQuestion();
@@ -94,15 +93,19 @@ const Play = () => {
 
     return (
         <View style={styles.container}>
+            {/* Header Section */}
             <View style={styles.header}>
-                <Text style={styles.pointsText}>{score} Points</Text>
-                <Text style={styles.timerText}>{timeLeft} Sec</Text>
+
+                <Text style={styles.opponentPoints}>Score: {score}</Text>
+                <Text style={styles.timer}>{timeLeft}</Text>
             </View>
 
+            {/* Question Section */}
             <View style={styles.questionContainer}>
                 <Text style={styles.questionText}>{currentQuestion.question}</Text>
             </View>
 
+            {/* Options Section */}
             <FlatList
                 data={currentQuestion.options}
                 renderItem={({ item, index }) => (
@@ -110,7 +113,10 @@ const Play = () => {
                         style={styles.optionButton}
                         onPress={() => handleAnswer(item)}
                     >
-                        <Text style={styles.optionText}>{String.fromCharCode(65 + index)}. {item}</Text>
+                        <View style={styles.optionCircle}>
+                            <Text style={styles.optionLetter}>{String.fromCharCode(65 + index)}</Text>
+                        </View>
+                        <Text style={styles.optionText}>{item}</Text>
                     </TouchableOpacity>
                 )}
                 keyExtractor={(item, index) => index.toString()}
@@ -121,52 +127,128 @@ const Play = () => {
 
 export default Play;
 
-// Add your styles here
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#f5f5f5",
+        backgroundColor: "#fff",
         padding: 16,
+        paddingTop: 30,
     },
     header: {
         flexDirection: "row",
-        justifyContent: "space-between",
         alignItems: "center",
+        justifyContent: 'space-between',
+        paddingHorizontal: 5,
         marginBottom: 16,
     },
-    pointsText: {
-        fontSize: 18,
-        fontWeight: "bold",
-        color: "#6c63ff",
+    wallet: {
+        backgroundColor: "#770FFC",
+        paddingVertical: 8,
+        paddingHorizontal: 16,
+        borderRadius: 20,
+        marginBottom: 10,
     },
-    timerText: {
-        fontSize: 18,
+    walletText: {
+        color: "#fff",
+        fontSize: 16,
         fontWeight: "bold",
-        color: "#6c63ff",
+    },
+    points: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        width: "100%",
+        paddingHorizontal: 16,
+        marginBottom: 10,
+    },
+    userPoints: {
+        fontSize: 16,
+        color: "#000",
+    },
+    opponentPoints: {
+        fontSize: 16,
+        color: "#000",
+        fontWeight: 600,
+    },
+    timer: {
+        fontSize: 14,
+        fontWeight: 600,
+        color: "#333",
     },
     questionContainer: {
-        backgroundColor: "#e0e0e0",
+        backgroundColor: "#770FFC",
         borderRadius: 12,
-        padding: 16,
-        marginBottom: 16,
+        padding: 20,
+        marginBottom: 20,
     },
     questionText: {
-        fontSize: 18,
-        fontWeight: "bold",
-        color: "#333",
+        fontSize: 16,
+        fontWeight: "500",
+        color: "#fff",
         textAlign: "center",
     },
     optionButton: {
-        backgroundColor: "#6c63ff",
-        padding: 16,
-        borderRadius: 8,
+        flexDirection: "row",
+        alignItems: "center",
+        backgroundColor: "#770FFC",
+        paddingVertical: 14,
+        paddingHorizontal: 12,
+        borderRadius: 30,
         marginVertical: 8,
     },
-    optionText: {
+    optionCircle: {
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        backgroundColor: "#5D0DB4",
+        justifyContent: "center",
+        alignItems: "center",
+        marginRight: 10,
+    },
+    optionLetter: {
+        color: "#fff",
         fontSize: 16,
         fontWeight: "bold",
-        color: "#fff",
     },
+    optionText: {
+        color: "#fff",
+        fontSize: 16,
+        fontWeight: "bold",
+    },
+    scoreContainer: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "#fff",
+    },
+    congratsText: {
+        fontSize: 24,
+        fontWeight: "bold",
+        color: "#333",
+    },
+    earningsText: {
+        fontSize: 18,
+        color: "#333",
+        marginVertical: 10,
+    },
+    playAgainButton: {
+        backgroundColor: "#FFD700",
+        paddingVertical: 12,
+        paddingHorizontal: 40,
+        borderRadius: 20,
+        marginVertical: 10,
+    },
+    playAgainText: {
+        fontSize: 16,
+        color: "#770FFC",
+        fontWeight: "bold",
+    },
+    goLobbyText: {
+        fontSize: 16,
+        color: "#770FFC",
+        textDecorationLine: "underline",
+    },
+
+
     scoreContainer: {
         flex: 1,
         backgroundColor: "#770FFC",
