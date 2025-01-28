@@ -2,8 +2,9 @@ import { Link } from "expo-router";
 import React, { useState, useEffect } from "react";
 import { StyleSheet, Text, View, TouchableOpacity, FlatList, Image } from "react-native";
 import { useUserAuth } from "./context/useAuthContext";
+import Connecting from "./connecting";
 import { db } from "../firebase";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc, arrayUnion, doc, updateDoc } from "firebase/firestore";
 
 const questions = [
     {
@@ -34,6 +35,40 @@ const Play = () => {
     const [score, setScore] = useState(0);
     const [showScore, setShowScore] = useState(false);
     const [timeLeft, setTimeLeft] = useState(10);
+    const [loading, setLoading] = useState(true);
+    const { user } = useUserAuth()
+
+    useEffect(() => {
+        const timerId = setTimeout(() => {
+            setLoading(false)
+        }, (3000))
+
+        return () => clearTimeout(timerId)
+    }, [])
+
+    const joinCompetiton = async () => {
+        if (!user) {
+            return alert("Please login")
+        }
+
+        try {
+            const competitionRef = doc(db, "competitions", "9D95R0qdSo0hWvvaU81O");
+            await updateDoc(competitionRef, {
+                players: arrayUnion({
+                    uid: user.uid,
+                    score: 0,
+                }),
+            });
+
+            console.log("User added to competition!");
+        } catch (error) {
+            console.error("Error adding user to competition: ", error);
+        }
+    }
+
+    useEffect(() => {
+        joinCompetiton()
+    }, [])
 
     useEffect(() => {
         if (timeLeft === 0) {
@@ -105,19 +140,21 @@ const Play = () => {
         setTimeLeft(10); // Reset timer
     };
 
+    if (loading) {
+        return <Connecting />
+    }
+
     if (showScore) {
         return (
             <View style={styles.scoreContainer}>
-                <Text style={styles.congratsText}>Quiz Completed!</Text>
-                <Text style={styles.earningsText}>Your Score: {score}</Text>
                 <View style={styles.starContainer}>
                     <Image
                         source={{ uri: "https://cdn-icons-png.flaticon.com/512/2525/2525752.png" }} // Replace with your star image URL
                         style={styles.starImage}
                     />
                 </View>
-                {/* <Text style={styles.congratsText}>Wow! You've made it.</Text> */}
-                <Text style={styles.earningsText}>Your Score : {score}</Text>
+                <Text style={styles.congratsText}>Quiz Completed!</Text>
+                <Text style={styles.earningsText}>Your Score: {score}</Text>
                 <TouchableOpacity style={styles.playAgainButton} onPress={restartQuiz}>
                     <Text style={styles.playAgainText}>Play Again</Text>
                 </TouchableOpacity>
