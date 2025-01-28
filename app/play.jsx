@@ -1,10 +1,10 @@
-import { Link } from "expo-router";
+import { Link, useNavigation } from "expo-router";
 import React, { useState, useEffect } from "react";
 import { StyleSheet, Text, View, TouchableOpacity, FlatList, Image } from "react-native";
 import { useUserAuth } from "./context/useAuthContext";
 import Connecting from "./connecting";
 import { db } from "../firebase";
-import { doc, getDoc, updateDoc, arrayUnion,  } from "firebase/firestore";
+import { doc, getDoc, updateDoc, arrayUnion, } from "firebase/firestore";
 
 const questions = [
     {
@@ -29,8 +29,9 @@ const questions = [
 
 const Play = () => {
 
-    const {user} = useUserAuth(); 
-    
+    const { user } = useUserAuth();
+    const navigation = useNavigation()
+
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [score, setScore] = useState(0);
     const [showScore, setShowScore] = useState(false);
@@ -41,7 +42,6 @@ const Play = () => {
         const timerId = setTimeout(() => {
             setLoading(false)
         }, (3000))
-
         return () => clearTimeout(timerId)
     }, [])
 
@@ -86,7 +86,7 @@ const Play = () => {
             setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
             setTimeLeft(10); // Reset timer for next question
         } else {
-            setShowScore(true);
+            navigation.navigate("result")
         }
     };
 
@@ -323,53 +323,4 @@ const styles = StyleSheet.create({
         textDecorationLine: "underline",
     },
 
-
-    scoreContainer: {
-        flex: 1,
-        backgroundColor: "#770FFC",
-        justifyContent: "center",
-        alignItems: "center",
-        padding: 16,
-    },
-    starContainer: {
-        backgroundColor: "#fff",
-        borderRadius: 100,
-        marginBottom: 20,
-    },
-    starImage: {
-        width: 80,
-        height: 80,
-    },
-    congratsText: {
-        fontSize: 24,
-        fontWeight: "bold",
-        color: "#fff",
-        textAlign: "center",
-        marginBottom: 10,
-    },
-    earningsText: {
-        fontSize: 25,
-        color: "#fff",
-        textAlign: "center",
-        marginBottom: 30,
-        fontWeight: 500
-    },
-    playAgainButton: {
-        backgroundColor: "#ffd700",
-        paddingVertical: 14,
-        paddingHorizontal: 50,
-        borderRadius: 8,
-        marginBottom: 15,
-    },
-    playAgainText: {
-        fontSize: 16,
-        fontWeight: "bold",
-        color: "#6c63ff",
-    },
-    goLobbyText: {
-        fontSize: 16,
-        color: "#fff",
-        textAlign: "center",
-        textDecorationLine: "underline",
-    },
 });
