@@ -2,6 +2,8 @@ import { Link } from "expo-router";
 import React, { useState, useEffect } from "react";
 import { StyleSheet, Text, View, TouchableOpacity, FlatList, Image } from "react-native";
 import { useUserAuth } from "./context/useAuthContext";
+import { db } from "../firebase";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
 
 const questions = [
     {
@@ -25,6 +27,9 @@ const questions = [
 ];
 
 const Play = () => {
+
+    const {user} = useUserAuth(); 
+    
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [score, setScore] = useState(0);
     const [showScore, setShowScore] = useState(false);
@@ -51,13 +56,47 @@ const Play = () => {
         }
     };
 
-    const handleAnswer = (selectedOption) => {
+    const handleAnswer = async (selectedOption) => {
         const currentQuestion = questions[currentQuestionIndex];
         if (selectedOption === currentQuestion.correctAnswer) {
-            setScore((prevScore) => prevScore + 1);
+            const newScore = score + 1;
+            setScore(newScore);
+
+            // Push the updated score to Firestore
+            await updatePlayerScore(newScore);
         }
         goToNextQuestion();
     };
+
+    const updatePlayerScore = async (newScore) => {
+        try {
+            const competitionId = "9D95R0qdSo0hWvvaU81O"; // Replace with the actual competition ID
+            const competitionRef = doc(db, "competitions", competitionId);
+
+            // Fetch the current competition document
+            const competitionSnapshot = await getDoc(competitionRef);
+
+            if (competitionSnapshot.exists()) {
+                const competitionData = competitionSnapshot.data();
+
+                // Get the current players array
+                const updatedPlayers = competitionData?.players?.map((player) => {
+                    if (player.uid === user?.uid) {
+                        return { ...player, score: newScore }; // Update the score for the matching user
+                    }
+                    return player; // Keep other players unchanged
+                });
+
+                // Update the players array in Firestore
+                await updateDoc(competitionRef, { players: updatedPlayers });
+            } else {
+                console.error("Competition document does not exist.");
+            }
+        } catch (error) {
+            console.error("Error updating score:", error);
+        }
+    };
+
 
     const restartQuiz = () => {
         setCurrentQuestionIndex(0);
