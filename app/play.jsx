@@ -38,6 +38,8 @@ const Play = () => {
     const [timeLeft, setTimeLeft] = useState(10);
     const [loading, setLoading] = useState(true);
 
+    console.log(user);
+    
     useEffect(() => {
         const timerId = setTimeout(() => {
             setLoading(false)
