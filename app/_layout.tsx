@@ -37,6 +37,7 @@ export default function RootLayout() {
         <Stack.Screen name="+not-found" />
         <Stack.Screen name='login' options={{headerShown : false}} />
         <Stack.Screen name='signup' options={{headerShown : false}} />
+        <Stack.Screen name='home' options={{headerShown : false}} />
         <Stack.Screen name='otpVerification' options={{headerShown : false}} />
         <Stack.Screen name='soloQuiz' options={{headerShown : false}} />
         <Stack.Screen name='quizCategory' options={{headerShown : true,title : "Sprots Quiz",
