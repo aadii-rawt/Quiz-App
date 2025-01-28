@@ -4,7 +4,7 @@ import { StyleSheet, Text, View, TouchableOpacity, FlatList, Image } from "react
 import { useUserAuth } from "./context/useAuthContext";
 import Connecting from "./connecting";
 import { db } from "../firebase";
-import { doc, getDoc, updateDoc, arrayUnion, doc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc, arrayUnion,  } from "firebase/firestore";
 
 const questions = [
     {
@@ -36,7 +36,6 @@ const Play = () => {
     const [showScore, setShowScore] = useState(false);
     const [timeLeft, setTimeLeft] = useState(10);
     const [loading, setLoading] = useState(true);
-    const { user } = useUserAuth()
 
     useEffect(() => {
         const timerId = setTimeout(() => {
