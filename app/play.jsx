@@ -2,6 +2,7 @@ import { Link } from "expo-router";
 import React, { useState, useEffect } from "react";
 import { StyleSheet, Text, View, TouchableOpacity, FlatList, Image } from "react-native";
 import { useUserAuth } from "./context/useAuthContext";
+import Connecting from "./connecting";
 
 const questions = [
     {
@@ -29,6 +30,15 @@ const Play = () => {
     const [score, setScore] = useState(0);
     const [showScore, setShowScore] = useState(false);
     const [timeLeft, setTimeLeft] = useState(10);
+    const [loading, setLoading] = useState(true)
+
+    useEffect(() => {
+        const timerId = setTimeout(() => {
+            setLoading(false)
+        }, (3000))
+
+        return () => clearTimeout(timerId)
+    }, [])
 
     // Timer logic
     useEffect(() => {
@@ -66,6 +76,10 @@ const Play = () => {
         setShowScore(false);
         setTimeLeft(10); // Reset timer
     };
+
+    if (loading) {
+        return <Connecting />
+    }
 
     if (showScore) {
         return (
