@@ -77,7 +77,7 @@ const Play = () => {
                         style={styles.starImage}
                     />
                 </View>
-                <Text style={styles.congratsText}>Wow! You've made it.</Text>
+                {/* <Text style={styles.congratsText}>Wow! You've made it.</Text> */}
                 <Text style={styles.earningsText}>Your Score : {score}</Text>
                 <TouchableOpacity style={styles.playAgainButton} onPress={restartQuiz}>
                     <Text style={styles.playAgainText}>Play Again</Text>
