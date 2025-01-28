@@ -10,20 +10,24 @@ import { MaterialIcons } from "@expo/vector-icons";
 
 export default function QuizCategory() {
   const data = [
-    { id: 1, winningAmount: "10₹", entry: "₹5.0" },
-    { id: 2, winningAmount: "10₹", entry: "₹5.0" },
-    { id: 3, winningAmount: "10₹", entry: "₹5.0" },
+    { id: 1, winningAmount: "10", entry: "₹5.0" },
+    { id: 2, winningAmount: "10", entry: "₹5.0" },
+    { id: 3, winningAmount: "10", entry: "₹5.0" },
   ];
 
   const renderItem = ({ item }) => (
     <View style={styles.card}>
-      <View style={styles.cardContent}>
-        <Text style={styles.winningAmount}>{item.winningAmount}</Text>
-        <Text style={styles.subtitle}>Winning amount</Text>
+      <View style={styles.mainCard}>
+        <View style={styles.cardContent}>
+          <Text style={styles.winningAmount}>₹{item.winningAmount}</Text>
+          <Text style={styles.subtitle}>Winning amount</Text>
+        </View>
+        <View style={styles}>
+          <Text style={styles.subtitle}>Entry</Text>
+          <Text style={styles.entryContainer}>{item.entry}</Text>
+        </View>
       </View>
-      <View style={styles.entryContainer}>
-        <Text style={styles.entryText}>{item.entry}</Text>
-      </View>
+
       <View style={styles.infoRow}>
         <Text style={styles.infoText}>2 Players</Text>
         <Text style={styles.infoText}>1 Winner</Text>
@@ -35,7 +39,7 @@ export default function QuizCategory() {
 
   return (
     <View style={styles.container}>
-     
+
 
       {/* Quiz Cards */}
       <FlatList
@@ -51,7 +55,7 @@ export default function QuizCategory() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f5e9fd",
+    backgroundColor: "",
     paddingTop: 40,
   },
   header: {
@@ -84,49 +88,59 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: "white",
     borderRadius: 16,
-    padding: 16,
+   
     marginBottom: 16,
     shadowColor: "#000",
     shadowOpacity: 0.1,
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 8,
-    elevation: 4,
+    elevation: 2,
+    
+  },
+  mainCard: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems : "center",
+    padding: 16,
+    justifyContent : "space-between"
   },
   cardContent: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+    // flexDirection: "row",
+    // alignItems: "center",
+    // justifyContent: "space-between",
   },
   winningAmount: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: "bold",
-    color: "#7c4dff",
+    color: "#343E43",
   },
   subtitle: {
     fontSize: 14,
     color: "gray",
     marginTop: 4,
   },
+ 
   entryContainer: {
-    backgroundColor: "#f5e9fd",
+    backgroundColor: "#770ffc",
     paddingVertical: 8,
     paddingHorizontal: 16,
-    borderRadius: 16,
+    borderRadius: 5,
     alignSelf: "flex-start",
-    marginTop: 8,
-  },
-  entryText: {
+    marginTop: 5,
     fontSize: 16,
     fontWeight: "bold",
-    color: "#7c4dff",
+    color: "white",
   },
   infoRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginTop: 16,
+    // marginTop: 16,
+    padding: 16,
+    backgroundColor : "#f3e9ff"
   },
   infoText: {
     fontSize: 12,
-    color: "gray",
+    color: "#770ffc",
+
   },
 });
