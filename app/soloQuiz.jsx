@@ -1,5 +1,6 @@
+import { Link } from "expo-router";
 import React, { useState } from "react";
-import { StyleSheet, Text, View, TouchableOpacity, FlatList } from "react-native";
+import { StyleSheet, Text, View, TouchableOpacity, Image,FlatList } from "react-native";
 
 const questions = [
     {
@@ -22,7 +23,6 @@ const questions = [
     },
 ];
 
-
 const SoloQuiz = () => {
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [score, setScore] = useState(0);
@@ -34,7 +34,6 @@ const SoloQuiz = () => {
             setScore((prevScore) => prevScore + 1);
         }
 
-        // Move to the next question or show score
         if (currentQuestionIndex < questions.length - 1) {
             setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
         } else {
@@ -50,10 +49,20 @@ const SoloQuiz = () => {
 
     if (showScore) {
         return (
-            <View style={styles.container}>
-                <Text style={styles.scoreText}>Your Score: {score}/{questions.length}</Text>
-                <TouchableOpacity style={styles.button} onPress={restartQuiz}>
-                    <Text style={styles.buttonText}>Restart Quiz</Text>
+            <View style={styles.scoreContainer}>
+                <View style={styles.starContainer}>
+                    {/* <Image
+                        source={{ uri: "https://i.imgur.com/Y3e9z3i.png" }} // Replace with your star image URL
+                        style={styles.starImage}
+                    /> */}
+                </View>
+                <Text style={styles.congratsText}>Wow! You've made it.</Text>
+                <Text style={styles.earningsText}>Your Score : {score}</Text>
+                <TouchableOpacity style={styles.playAgainButton} onPress={restartQuiz}>
+                    <Text style={styles.playAgainText}>Play Again</Text>
+                </TouchableOpacity>
+                <TouchableOpacity>
+                    <Text style={styles.goLobbyText}><Link href='' >Go Lobby</Link></Text>
                 </TouchableOpacity>
             </View>
         );
@@ -63,17 +72,23 @@ const SoloQuiz = () => {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.questionText}>
-                {currentQuestionIndex + 1}. {currentQuestion.question}
-            </Text>
+            <View style={styles.header}>
+                <Text style={styles.pointsText}>{score} Point</Text>
+                <Text style={styles.timerText}>60 Sec</Text>
+            </View>
+
+            <View style={styles.questionContainer}>
+                <Text style={styles.questionText}>{currentQuestion.question}</Text>
+            </View>
+
             <FlatList
                 data={currentQuestion.options}
-                renderItem={({ item }) => (
+                renderItem={({ item, index }) => (
                     <TouchableOpacity
                         style={styles.optionButton}
                         onPress={() => handleAnswer(item)}
                     >
-                        <Text style={styles.optionText}>{item}</Text>
+                        <Text style={styles.optionText}>{String.fromCharCode(65 + index)}. {item}</Text>
                     </TouchableOpacity>
                 )}
                 keyExtractor={(item, index) => index.toString()}
@@ -87,43 +102,95 @@ export default SoloQuiz;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        padding: 20,
         backgroundColor: "#f5f5f5",
+        padding: 16,
+    },
+    header: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        marginBottom: 16,
+    },
+    pointsText: {
+        fontSize: 18,
+        fontWeight: "bold",
+        color: "#6c63ff",
+    },
+    timerText: {
+        fontSize: 18,
+        fontWeight: "bold",
+        color: "#6c63ff",
+    },
+    questionContainer: {
+        backgroundColor: "#e0e0e0",
+        borderRadius: 12,
+        padding: 16,
+        marginBottom: 16,
     },
     questionText: {
-        fontSize: 20,
+        fontSize: 18,
         fontWeight: "bold",
-        marginBottom: 20,
+        color: "#333",
         textAlign: "center",
     },
     optionButton: {
-        backgroundColor: "#ffaa33",
-        padding: 15,
+        backgroundColor: "#6c63ff",
+        padding: 16,
         borderRadius: 8,
-        marginVertical: 10,
-        width: "100%",
-        alignItems: "center",
+        marginVertical: 8,
     },
     optionText: {
         fontSize: 16,
+        fontWeight: "bold",
         color: "#fff",
-        fontWeight: "bold",
     },
-    scoreText: {
-        fontSize: 24,
-        fontWeight: "bold",
+    scoreContainer: {
+        flex: 1,
+        backgroundColor: "#770FFC",
+        justifyContent: "center",
+        alignItems: "center",
+        padding: 16,
+    },
+    starContainer: {
+        backgroundColor: "#fff",
+        borderRadius: 100,
+        padding: 20,
         marginBottom: 20,
     },
-    button: {
-        backgroundColor: "#007bff",
-        padding: 15,
-        borderRadius: 8,
+    starImage: {
+        width: 80,
+        height: 80,
     },
-    buttonText: {
+    congratsText: {
+        fontSize: 24,
+        fontWeight: "bold",
+        color: "#fff",
+        textAlign: "center",
+        marginBottom: 10,
+    },
+    earningsText: {
+        fontSize: 25,
+        color: "#fff",
+        textAlign: "center",
+        marginBottom: 30,
+        fontWeight: 500
+    },
+    playAgainButton: {
+        backgroundColor: "#ffd700",
+        paddingVertical: 14,
+        paddingHorizontal: 50,
+        borderRadius: 8,
+        marginBottom: 15,
+    },
+    playAgainText: {
+        fontSize: 16,
+        fontWeight: "bold",
+        color: "#6c63ff",
+    },
+    goLobbyText: {
         fontSize: 16,
         color: "#fff",
-        fontWeight: "bold",
+        textAlign: "center",
+        textDecorationLine: "underline",
     },
 });
