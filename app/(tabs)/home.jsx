@@ -5,7 +5,7 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import Slider from '../../components/Slider';
 import ActiveQuiz from '../../components/ActiveQuiz';
 import CurrentCompetion from '../../components/CurrentCompetion'
-import { Link, Link } from 'expo-router';
+import { Link } from 'expo-router';
 import { useUserAuth } from '../context/useAuthContext';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../../firebase';

@@ -1,6 +1,7 @@
 import { StyleSheet, Text, View, FlatList, TouchableOpacity, Image } from 'react-native';
 import React from 'react';
 import Icon from "react-native-vector-icons/Ionicons";
+import { Link, useNavigation } from 'expo-router';
 
 const data = [
     {
@@ -23,6 +24,8 @@ const data = [
 
 const CurrentCompetion = () => {
 
+    const navigation = useNavigation();
+
     const renderItem = ({ item }) => (
         <View style={styles.card}>
             <Image source={{ uri: item.image }} style={styles.thumbnail} />
@@ -40,8 +43,11 @@ const CurrentCompetion = () => {
                     </View>
                 </View>
             </View>
-            <TouchableOpacity style={styles.playButton}>
-                <Text style={{color: 'white'}}>Play Now</Text>
+
+            <TouchableOpacity style={styles.playButton}
+                onPress={() => navigation.navigate('play')}
+            >
+                <Text style={{ color: 'white' }}>Play Now</Text>
             </TouchableOpacity>
         </View>
     );
@@ -74,7 +80,7 @@ const styles = StyleSheet.create({
         marginBottom: 5,
         flexDirection: 'column',
         gap: 15,
-        width : '100%',
+        width: '100%',
     },
     card: {
         width: '100%',

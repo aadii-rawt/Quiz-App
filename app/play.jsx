@@ -1,6 +1,6 @@
 import { Link } from "expo-router";
 import React, { useState, useEffect } from "react";
-import { StyleSheet, Text, View, TouchableOpacity, FlatList } from "react-native";
+import { StyleSheet, Text, View, TouchableOpacity, FlatList, Image } from "react-native";
 import { useUserAuth } from "./context/useAuthContext";
 
 const questions = [
@@ -24,7 +24,7 @@ const questions = [
     },
 ];
 
-const SoloQuiz = () => {
+const Play = () => {
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [score, setScore] = useState(0);
     const [showScore, setShowScore] = useState(false);
@@ -119,7 +119,7 @@ const SoloQuiz = () => {
     );
 };
 
-export default SoloQuiz;
+export default Play;
 
 // Add your styles here
 const styles = StyleSheet.create({
