@@ -51,10 +51,10 @@ const SoloQuiz = () => {
         return (
             <View style={styles.scoreContainer}>
                 <View style={styles.starContainer}>
-                    {/* <Image
-                        source={{ uri: "https://i.imgur.com/Y3e9z3i.png" }} // Replace with your star image URL
+                    <Image
+                        source={{ uri: "https://cdn-icons-png.flaticon.com/512/2525/2525752.png" }} // Replace with your star image URL
                         style={styles.starImage}
-                    /> */}
+                    />
                 </View>
                 <Text style={styles.congratsText}>Wow! You've made it.</Text>
                 <Text style={styles.earningsText}>Your Score : {score}</Text>
@@ -154,7 +154,6 @@ const styles = StyleSheet.create({
     starContainer: {
         backgroundColor: "#fff",
         borderRadius: 100,
-        padding: 20,
         marginBottom: 20,
     },
     starImage: {

@@ -5,7 +5,7 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import Slider from '../../components/Slider';
 import ActiveQuiz from '../../components/ActiveQuiz';
 import CurrentCompetion from '../../components/CurrentCompetion'
-import { useNavigation } from 'expo-router';
+import { Link, useNavigation } from 'expo-router';
 
 const Home = () => {
 
@@ -72,7 +72,7 @@ const Home = () => {
                 </TouchableOpacity>
             </View>
             <View style={styles.categories}>
-                <TouchableOpacity style={styles.category}>
+                <TouchableOpacity onPress={() => navigation.navigate("quizCategory")} style={styles.category}>
                     <FontAwesome5 name="baseball-ball" size={25} color="#FF7043" />
                     <Text style={styles.categoryText}>Sports</Text>
                 </TouchableOpacity>

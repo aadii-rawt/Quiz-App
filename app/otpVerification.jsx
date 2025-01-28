@@ -10,14 +10,13 @@ import {
 } from 'react-native';
 import { db } from '../firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { useNavigation } from 'expo-router';
+import { useNavigation, useRouter } from 'expo-router';
 import { useUserAuth } from './context/useAuthContext';
 
 const OtpVerification = ({ confirmation, username, phoneNumber, type = 'signup' }) => {
     const [otp, setOtp] = useState(['', '', '', '', '', '']);
-    const navigation = useNavigation()
     const { setUser } = useUserAuth()
-
+    const router = useRouter();
     const handleOtpChange = (value, index) => {
         const newOtp = [...otp];
         newOtp[index] = value;
@@ -54,7 +53,7 @@ const OtpVerification = ({ confirmation, username, phoneNumber, type = 'signup' 
                         const userData = userSnapshot.data();
                         setUser(userData);
                         console.log('User data:', userData);
-                        navigation.navigate('home');
+                        router.push('/')
                     } else {
                         console.log('No user data found');
                     }
