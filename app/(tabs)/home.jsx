@@ -1,15 +1,32 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from 'react-native';
 import { MaterialIcons, FontAwesome5, Ionicons, Entypo } from '@expo/vector-icons';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import Slider from '../../components/Slider';
 import ActiveQuiz from '../../components/ActiveQuiz';
 import CurrentCompetion from '../../components/CurrentCompetion'
-import { Link, useNavigation } from 'expo-router';
+import { Link, Link } from 'expo-router';
+import { useUserAuth } from '../context/useAuthContext';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '../../firebase';
 
 const Home = () => {
 
-    const navigation = useNavigation();
+    const {user} = useUserAuth();
+    const [userData , setUserData] = useState();
+
+    const fetchUser = async () => {
+        const userDocRef = doc(db, `users/${user?.uid}`);
+        const userSnapshot = await getDoc(userDocRef);
+
+        const userData = userSnapshot.data();
+        setUserData(userData);
+        console.log(userData);
+    }
+
+    useEffect(()=>{
+        fetchUser();
+    },[user])
 
     return (
         <ScrollView style={styles.container}>
@@ -20,9 +37,9 @@ const Home = () => {
                         source={{ uri: 'https://imgcdn.stablediffusionweb.com/2024/9/8/9bc3b58a-aca9-4f88-9ecc-6ea2217f7790.jpg' }} // Replace with profile image URI
                         style={styles.profileImage}
                     />
-                    <View>
+                    <View style={{display: 'flex', gap: '5px', flexDirection: 'row', alignItems: 'center'}}>
                         <Text style={styles.greeting}>Hello!</Text>
-                        <Text style={styles.userName}>Ivan L.</Text>
+                        <Text style={styles.userName}>{userData?.username}</Text>
                     </View>
                 </View>
                 <View style={styles.coins}>
@@ -74,7 +91,7 @@ const Home = () => {
             <View style={styles.categories}>
                 <TouchableOpacity onPress={() => navigation.navigate("quizCategory")} style={styles.category}>
                     <FontAwesome5 name="baseball-ball" size={25} color="#FF7043" />
-                    <Text style={styles.categoryText}>Sports</Text>
+                    <Text style={styles.categoryText}> <Link href='quizCategory'>Sports</Link> </Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.category}>
                     <FontAwesome5 name="space-shuttle" size={25} color="#4FC3F7" />
