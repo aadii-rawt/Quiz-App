@@ -176,9 +176,9 @@ const styles = StyleSheet.create({
     coins: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#ea9906',
+        backgroundColor: '#650ce2',
         padding: 5,
-        borderRadius: 7
+        borderRadius: 10
     },
     coinText: {
         color: '#fff',
