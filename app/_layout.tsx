@@ -41,7 +41,7 @@ export default function RootLayout() {
         <Stack.Screen name='home' options={{headerShown : false}} />
         <Stack.Screen name='play' options={{headerShown : false}} />
         <Stack.Screen name='otpVerification' options={{headerShown : false}} />
-        <Stack.Screen name='soloQuiz' options={{headerShown : false}} />
+        <Stack.Screen name='play' options={{headerShown : false}} />
         <Stack.Screen name='quizCategory' options={{headerShown : true,title : "Sprots Quiz",
            headerLeft: () => (
             <MaterialIcons
