@@ -6,8 +6,11 @@ import Slider from '../components/Slider';
 import ActiveQuiz from '../components/ActiveQuiz';
 import CurrentCompetion from '../components/CurrentCompetion'
 import { Link } from 'expo-router';
+import { useUserAuth } from './context/useAuthContext';
 
 const Home = () => {
+
+    const {user} = useUserAuth();
 
     return (
         <ScrollView style={styles.container}>
@@ -20,7 +23,7 @@ const Home = () => {
                     />
                     <View>
                         <Text style={styles.greeting}>Hello!</Text>
-                        <Text style={styles.userName}>Ivan L.</Text>
+                        <Text style={styles.userName}>{user?.uid}</Text>
                     </View>
                 </View>
                 <View style={styles.coins}>
