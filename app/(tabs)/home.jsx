@@ -5,7 +5,7 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import Slider from '../../components/Slider';
 import ActiveQuiz from '../../components/ActiveQuiz';
 import CurrentCompetion from '../../components/CurrentCompetion'
-import { Link } from 'expo-router';
+import { Link, Link } from 'expo-router';
 import { useUserAuth } from '../context/useAuthContext';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../../firebase';
@@ -89,7 +89,7 @@ const Home = () => {
                 </TouchableOpacity>
             </View>
             <View style={styles.categories}>
-                <TouchableOpacity style={styles.category}>
+                <TouchableOpacity onPress={() => navigation.navigate("quizCategory")} style={styles.category}>
                     <FontAwesome5 name="baseball-ball" size={25} color="#FF7043" />
                     <Text style={styles.categoryText}> <Link href='quizCategory'>Sports</Link> </Text>
                 </TouchableOpacity>

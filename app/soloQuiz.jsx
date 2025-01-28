@@ -72,6 +72,14 @@ const SoloQuiz = () => {
             <View style={styles.scoreContainer}>
                 <Text style={styles.congratsText}>Quiz Completed!</Text>
                 <Text style={styles.earningsText}>Your Score: {score}</Text>
+                <View style={styles.starContainer}>
+                    <Image
+                        source={{ uri: "https://cdn-icons-png.flaticon.com/512/2525/2525752.png" }} // Replace with your star image URL
+                        style={styles.starImage}
+                    />
+                </View>
+                <Text style={styles.congratsText}>Wow! You've made it.</Text>
+                <Text style={styles.earningsText}>Your Score : {score}</Text>
                 <TouchableOpacity style={styles.playAgainButton} onPress={restartQuiz}>
                     <Text style={styles.playAgainText}>Play Again</Text>
                 </TouchableOpacity>
@@ -169,7 +177,6 @@ const styles = StyleSheet.create({
     starContainer: {
         backgroundColor: "#fff",
         borderRadius: 100,
-        padding: 20,
         marginBottom: 20,
     },
     starImage: {
