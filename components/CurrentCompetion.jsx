@@ -28,10 +28,10 @@ const CurrentCompetion = () => {
             <Image source={{ uri: item.image }} style={styles.thumbnail} />
             <View style={styles.info}>
                 <Text style={styles.title}>{item.title}</Text>
-                <Text style={styles.author}>by {item.author}</Text>
+                {/* <Text style={styles.author}>by {item.author}</Text> */}
                 <View style={styles.details}>
                     <View style={styles.detailItem}>
-                        <Icon name="diamond" size={16} color="#7d7d7d" />
+                        <Icon name="diamond" size={16} color="#25c50a" />
                         <Text style={styles.detailText}>{item.points}</Text>
                     </View>
                     <View style={styles.detailItem}>
@@ -41,7 +41,7 @@ const CurrentCompetion = () => {
                 </View>
             </View>
             <TouchableOpacity style={styles.playButton}>
-                <Icon name="play-circle" size={30} color="#fff" />
+                <Text style={{color: 'white'}}>Play Now</Text>
             </TouchableOpacity>
         </View>
     );
@@ -71,27 +71,33 @@ const styles = StyleSheet.create({
     },
     sliderContainer: {
         paddingHorizontal: 0,
-        marginBottom: 5
+        marginBottom: 5,
+        flexDirection: 'column',
+        gap: 15,
+        width : '100%',
     },
     card: {
-        width: 250,
+        width: '100%',
         backgroundColor: "#fff",
         borderRadius: 12,
         marginRight: 10,
-        padding: 12,
+        // padding: 12,
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.1,
+        elevation: 0,
         shadowRadius: 4,
+        border: '1px solid #00000033',
     },
     thumbnail: {
         width: "100%",
-        height: 120,
+        height: 180,
         borderRadius: 8,
         marginBottom: 10,
     },
     info: {
         flex: 1,
+        paddingHorizontal: 12,
     },
     title: {
         fontSize: 16,
@@ -119,10 +125,11 @@ const styles = StyleSheet.create({
         marginLeft: 4,
     },
     playButton: {
-        backgroundColor: "#ffaa33",
+        backgroundColor: "rgb(135, 67, 254)",
         borderRadius: 25,
         padding: 5,
+        paddingHorizontal: 10,
         alignSelf: 'flex-start',
-        marginTop: 10,
+        margin: 12,
     },
 });
