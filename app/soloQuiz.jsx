@@ -1,6 +1,7 @@
 import { Link } from "expo-router";
-import React, { useState } from "react";
-import { StyleSheet, Text, View, TouchableOpacity, Image,FlatList } from "react-native";
+import React, { useState, useEffect } from "react";
+import { StyleSheet, Text, View, TouchableOpacity, FlatList } from "react-native";
+import { useUserAuth } from "./context/useAuthContext";
 
 const questions = [
     {
@@ -27,42 +28,55 @@ const SoloQuiz = () => {
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [score, setScore] = useState(0);
     const [showScore, setShowScore] = useState(false);
+    const [timeLeft, setTimeLeft] = useState(10);
+
+    // Timer logic
+    useEffect(() => {
+        if (timeLeft === 0) {
+            goToNextQuestion();
+        } else {
+            const timer = setTimeout(() => {
+                setTimeLeft((prev) => prev - 1);
+            }, 1000);
+
+            return () => clearTimeout(timer);
+        }
+    }, [timeLeft]);
+
+    const goToNextQuestion = () => {
+        if (currentQuestionIndex < questions.length - 1) {
+            setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
+            setTimeLeft(10); // Reset timer for next question
+        } else {
+            setShowScore(true);
+        }
+    };
 
     const handleAnswer = (selectedOption) => {
         const currentQuestion = questions[currentQuestionIndex];
         if (selectedOption === currentQuestion.correctAnswer) {
             setScore((prevScore) => prevScore + 1);
         }
-
-        if (currentQuestionIndex < questions.length - 1) {
-            setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
-        } else {
-            setShowScore(true);
-        }
+        goToNextQuestion();
     };
 
     const restartQuiz = () => {
         setCurrentQuestionIndex(0);
         setScore(0);
         setShowScore(false);
+        setTimeLeft(10); // Reset timer
     };
 
     if (showScore) {
         return (
             <View style={styles.scoreContainer}>
-                <View style={styles.starContainer}>
-                    {/* <Image
-                        source={{ uri: "https://i.imgur.com/Y3e9z3i.png" }} // Replace with your star image URL
-                        style={styles.starImage}
-                    /> */}
-                </View>
-                <Text style={styles.congratsText}>Wow! You've made it.</Text>
-                <Text style={styles.earningsText}>Your Score : {score}</Text>
+                <Text style={styles.congratsText}>Quiz Completed!</Text>
+                <Text style={styles.earningsText}>Your Score: {score}</Text>
                 <TouchableOpacity style={styles.playAgainButton} onPress={restartQuiz}>
                     <Text style={styles.playAgainText}>Play Again</Text>
                 </TouchableOpacity>
                 <TouchableOpacity>
-                    <Text style={styles.goLobbyText}><Link href='' >Go Lobby</Link></Text>
+                    <Text style={styles.goLobbyText}><Link href=''>Go Lobby</Link></Text>
                 </TouchableOpacity>
             </View>
         );
@@ -73,8 +87,8 @@ const SoloQuiz = () => {
     return (
         <View style={styles.container}>
             <View style={styles.header}>
-                <Text style={styles.pointsText}>{score} Point</Text>
-                <Text style={styles.timerText}>60 Sec</Text>
+                <Text style={styles.pointsText}>{score} Points</Text>
+                <Text style={styles.timerText}>{timeLeft} Sec</Text>
             </View>
 
             <View style={styles.questionContainer}>
@@ -99,6 +113,7 @@ const SoloQuiz = () => {
 
 export default SoloQuiz;
 
+// Add your styles here
 const styles = StyleSheet.create({
     container: {
         flex: 1,
