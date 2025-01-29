@@ -42,7 +42,7 @@ export default function RootLayout() {
         <Stack.Screen name='play' options={{headerShown : false}} />
         <Stack.Screen name='result' options={{headerShown : false}} />
         <Stack.Screen name='otpVerification' options={{headerShown : false}} />
-        <Stack.Screen name='quizCategory' options={{headerShown : true,title : "Sprots Quiz",
+        <Stack.Screen name='quizCategory' options={{headerShown : true,title : "Sports Quiz",
            headerLeft: () => (
             <MaterialIcons
               name="arrow-back"
