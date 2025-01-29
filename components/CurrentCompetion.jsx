@@ -2,6 +2,8 @@ import { StyleSheet, Text, View, FlatList, TouchableOpacity, Image } from 'react
 import React from 'react';
 import Icon from "react-native-vector-icons/Ionicons";
 import { Link, useNavigation } from 'expo-router';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '@/firebase';
 
 const data = [
     {
@@ -22,9 +24,42 @@ const data = [
     },
 ];
 
-const CurrentCompetion = () => {
+const CurrentCompetion = ( {user} ) => {
 
     const navigation = useNavigation();
+
+    const fetchComptetionInfo = async () => {
+        const compId = '9D95R0qdSo0hWvvaU81O';
+
+        try {
+            const userDocRef = doc(db, `competitions/${compId}`);
+            const userSnapshot = await getDoc(userDocRef);
+
+            if (userSnapshot.exists()) {
+                const userData = userSnapshot.data();
+
+                if (userData?.players) {
+                    // Find the player whose UID matches the current user's UID
+                    const currentPlayer = userData.players.find(player => player.uid === user?.uid);
+
+                    if (currentPlayer) {
+                        console.log("Current User's Player Data:", currentPlayer);
+                        alert('You have already played this quiz');
+                        return;
+                    } else {
+                        navigation.navigate('play')
+                        console.log("Current User's Player Data not found in the players array.");
+                    }
+                } else {
+                    console.log("No players found in competition data.");
+                }
+            } else {
+                console.log("Competition document does not exist.");
+            }
+        } catch (error) {
+            console.error("Error fetching competition info:", error);
+        }
+    };
 
     const renderItem = ({ item }) => (
         <View style={styles.card}>
@@ -45,7 +80,8 @@ const CurrentCompetion = () => {
             </View>
 
             <TouchableOpacity style={styles.playButton}
-                onPress={() => navigation.navigate('play')}
+                // onPress={() => navigation.navigate('play')}
+                onPress={fetchComptetionInfo}
             >
                 <Text style={{ color: 'white' }}>Play Now</Text>
             </TouchableOpacity>
