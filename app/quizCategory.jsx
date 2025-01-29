@@ -144,3 +144,6 @@ const styles = StyleSheet.create({
 
   },
 });
+
+
+// but i mean im changing yay me no luch with that ahes no puttingn and i'va sen muffine they saw right se doesn't mor ethey loving me instead. what else to do. excellent to taring it down. rookie move. its already see. you kow sometime. 
