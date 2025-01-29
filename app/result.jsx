@@ -2,13 +2,15 @@ import { StyleSheet, Text, TouchableOpacity, View, Image, ActivityIndicator } fr
 import React, { useEffect, useState } from "react";
 import { Link } from "expo-router";
 import { getFirestore, doc, getDoc } from "firebase/firestore";
+import { db } from "../firebase";
 
 const Result = ({ quizId = "9D95R0qdSo0hWvvaU81O" }) => {
   const [loading, setLoading] = useState(true);
   const [isTimeOver, setIsTimeOver] = useState(false);
   const [players, setPlayers] = useState([]);
   const [yourScore, setYourScore] = useState(0);
-
+  const [usernames, setUsernames] = useState({});
+  
   useEffect(() => {
     const fetchQuizData = async () => {
       const db = getFirestore();
@@ -21,11 +23,10 @@ const Result = ({ quizId = "9D95R0qdSo0hWvvaU81O" }) => {
           const quizData = quizDoc.data();
           const currentTime = new Date().toISOString();
 
-          // Check if the quiz time is over
           if (currentTime >= quizData.endTime) {
             setIsTimeOver(true);
 
-            // Sort players by score in descending order and assign ranks
+            // Sort players by score and assign ranks
             const sortedPlayers = quizData.players
               .sort((a, b) => b.score - a.score)
               .map((player, index) => ({
@@ -35,7 +36,35 @@ const Result = ({ quizId = "9D95R0qdSo0hWvvaU81O" }) => {
 
             setPlayers(sortedPlayers);
 
-            // Set your score (assumes current user is logged in and their UID is available)
+            // Fetch usernames for each player
+            const fetchUserDetails = async () => {
+              const usernamesMap = {};
+              const userPromises = sortedPlayers.map(async (player) => {
+                const userRef = doc(db, "users", player.uid); // Get user by UID
+                const userDoc = await getDoc(userRef);
+
+                if (userDoc.exists()) {
+                  usernamesMap[player.uid] = userDoc.data().username; // Map UID to username
+                } else {
+                  usernamesMap[player.uid] = "Unknown"; // Default if user not found
+                }
+              });
+
+              await Promise.all(userPromises); // Wait for all user fetches
+              setPlayers((prevPlayers) =>
+                prevPlayers.map((player) => ({
+                  ...player,
+                  username: usernamesMap[player.uid], // Add username to each player
+                }))
+              );
+
+              console.log(usernamesMap);
+              
+            };
+
+            fetchUserDetails();
+
+            // Set your score (assuming UID is available)
             const currentUserUID = "currentUserUID"; // Replace with actual UID
             const currentUser = sortedPlayers.find((player) => player.uid === currentUserUID);
             setYourScore(currentUser?.score || 0);
@@ -83,7 +112,14 @@ const Result = ({ quizId = "9D95R0qdSo0hWvvaU81O" }) => {
       <Text style={styles.rankTitle}>Leaderboard:</Text>
       {players.map((player) => (
         <Text key={player.uid} style={styles.rankText}>
-          {player.rank}. {player.name}: {player.score} points
+          <Text style={{display: 'flex', alignItems: 'center', gap: '4px'}}>
+            {player.rank}.
+
+            <Text style={styles.userProfile}>{player?.username?.slice(0,1)}</Text>
+            
+            {player?.username}
+          </Text>
+          {player.score} points
         </Text>
       ))}
 
@@ -138,6 +174,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 50,
     borderRadius: 8,
     marginBottom: 15,
+    marginTop: 20,
   },
   playAgainText: {
     fontSize: 16,
@@ -155,11 +192,28 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#fff",
     marginTop: 20,
-    marginBottom: 10,
+    marginBottom: 15,
   },
   rankText: {
     fontSize: 16,
     color: "#fff",
     marginBottom: 5,
+    display: 'flex',
+    justifyContent: 'space-between',
+    width: '100%',
+    paddingHorizontal: 10,
+    alignItems: 'center',
+    marginTop: 5,
   },
+  userProfile: {
+    backgroundColor: '#ebcc24',
+    padding: 2,
+    borderRadius: '100%',
+    width: 30,
+    height: 30,
+    textAlign: 'center',
+    textTransform: 'uppercase',
+    fontSize: 16,
+    // color: 'black'
+  }
 });

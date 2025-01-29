@@ -49,7 +49,7 @@ const Home = () => {
             </View>
 
             <View>
-                <CurrentCompetion />
+                <CurrentCompetion user={user} />
             </View>
 
             {/* Buttons */}
@@ -66,7 +66,7 @@ const Home = () => {
                     // background: 'rgb(135, 67, 254)',
                     backgroundColor: 'linear-gradient(0deg, rgba(135, 67, 254, 1) 35%, rgba(161, 127, 220, 1) 100%)'
                 }]}
-                    onPress={() => navigation.navigate('soloQuiz')}
+                    // onPress={() => navigation.navigate('soloQuiz')}
                 >
                     <FontAwesome5 name="user-alt" size={24} color="#fff" />
                     <Text style={styles.buttonText}>Solo Mode</Text>

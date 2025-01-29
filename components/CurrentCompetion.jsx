@@ -2,6 +2,8 @@ import { StyleSheet, Text, View, FlatList, TouchableOpacity, Image } from 'react
 import React from 'react';
 import Icon from "react-native-vector-icons/Ionicons";
 import { Link, useNavigation } from 'expo-router';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '@/firebase';
 
 const data = [
     {
@@ -22,37 +24,65 @@ const data = [
     },
 ];
 
-const CurrentCompetion = () => {
+const CurrentCompetion = ( {user} ) => {
 
     const navigation = useNavigation();
+
+    const fetchComptetionInfo = async () => {
+        const compId = '9D95R0qdSo0hWvvaU81O';
+
+        try {
+            const userDocRef = doc(db, `competitions/${compId}`);
+            const userSnapshot = await getDoc(userDocRef);
+
+            if (userSnapshot.exists()) {
+                const userData = userSnapshot.data();
+
+                if (userData?.players) {
+                    // Find the player whose UID matches the current user's UID
+                    const currentPlayer = userData.players.find(player => player.uid === user?.uid);
+
+                    if (currentPlayer) {
+                        console.log("Current User's Player Data:", currentPlayer);
+                        alert('You have already played this quiz');
+                        return;
+                    } else {
+                        navigation.navigate('play')
+                        console.log("Current User's Player Data not found in the players array.");
+                    }
+                } else {
+                    console.log("No players found in competition data.");
+                }
+            } else {
+                console.log("Competition document does not exist.");
+            }
+        } catch (error) {
+            console.error("Error fetching competition info:", error);
+        }
+    };
 
     const renderItem = ({ item }) => (
         <View style={styles.card}>
             <Image source={{ uri: item.image }} style={styles.thumbnail} />
             <View style={styles.info}>
                 {/* <Text style={styles.author}>by {item.author}</Text> */}
-                <View >
-                    <Text style={styles.title}>{item.title}</Text>
-                    <View style={styles.details}>
-                        <View style={styles.detailItem}>
-                            <Icon name="diamond" size={16} color="#25c50a" />
-                            <Text style={styles.detailText}>{item.points}</Text>
-                        </View>
-                        <View style={styles.detailItem}>
-                            <Icon name="time" size={16} color="#7d7d7d" />
-                            <Text style={styles.detailText}>{item.time}</Text>
-                        </View>
+                <View style={styles.details}>
+                    <View style={styles.detailItem}>
+                        <Icon name="diamond" size={16} color="#25c50a" />
+                        <Text style={styles.detailText}>{item.points}</Text>
                     </View>
-                </View>
-                <View >
-                    <TouchableOpacity style={styles.playButton}
-                        onPress={() => navigation.navigate('play')}
-                    >
-                        <Text style={{ color: 'white', fontWeight: 500, }}>Play Now</Text>
-                    </TouchableOpacity>
+                    <View style={styles.detailItem}>
+                        <Icon name="time" size={16} color="#7d7d7d" />
+                        <Text style={styles.detailText}>{item.time}</Text>
+                    </View>
                 </View>
             </View>
 
+            <TouchableOpacity style={styles.playButton}
+                onPress={fetchComptetionInfo}
+            >
+                <Text style={{ color: 'white' }}>Play Now</Text>
+            </TouchableOpacity>
         </View>
     );
 
