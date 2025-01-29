@@ -176,5 +176,3 @@ const styles = StyleSheet.create({
         elevation: "",
     },
 });
-
-// What's the point what do you mean. and then not a show but what's if you're in the end you're gonna help frankly what about you chuck let me put you each other. things are the way they are. i dnt want hurt your feeling. its been al right have you hae to put it off. have you wanna i dont't alaskan you can walk gonaa glacier and if alaska it to cold. that sounds very nice why not. they are still. upset. they must be excited about the it she showed to whe important to you just want to back on a good trust where is her can't hlep you were just trying to help if you should blame me you she doesn't you. are you sure this is wendseday. come in today. how you gonna say that. natcho what happend to you  you strapped thy're coming. who? fron now on the what's the doing ther. i settle it right now. you have to work together the can suck me you should be kissing my ass built we all did salamana treat you hector. it its. it is personal. when they arrive. i need an ambulance. come on how much you need to do it. 
