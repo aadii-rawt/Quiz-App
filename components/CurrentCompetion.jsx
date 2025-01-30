@@ -9,7 +9,6 @@ const data = [
     {
         id: "1",
         title: "Beginner Math Quiz",
-        author: "Mahmud Saimon",
         points: "500",
         time: "5min",
         image: "https://images.pexels.com/photos/3165335/pexels-photo-3165335.jpeg",
@@ -17,15 +16,13 @@ const data = [
     {
         id: "2",
         title: "Inter  mediate Math Quiz",
-        author: "Mahmud Saimon",
         points: "700",
         time: "10min",
         image: "https://images.pexels.com/photos/3165335/pexels-photo-3165335.jpeg",
     },
 ];
 
-const CurrentCompetion = ( {user} ) => {
-
+const CurrentCompetion = ({ user }) => {
     const navigation = useNavigation();
 
     const fetchComptetionInfo = async () => {
@@ -65,25 +62,29 @@ const CurrentCompetion = ( {user} ) => {
         <View style={styles.card}>
             <Image source={{ uri: item.image }} style={styles.thumbnail} />
             <View style={styles.info}>
-                {/* <Text style={styles.author}>by {item.author}</Text> */}
-                <View style={styles.details}>
-                    <View style={styles.detailItem}>
-                        <Icon name="diamond" size={16} color="#25c50a" />
-                        <Text style={styles.detailText}>{item.points}</Text>
+                <View >
+                    <Text style={styles.title}>{item.title}</Text>
+                    <View style={styles.details}>
+                        <View style={styles.detailItem}>
+                            <Icon name="diamond" size={16} color="#25c50a" />
+                            <Text style={styles.detailText}>{item.points}</Text>
+                        </View>
+                        <View style={styles.detailItem}>
+                            <Icon name="time" size={16} color="#7d7d7d" />
+                            <Text style={styles.detailText}>{item.time}</Text>
+                        </View>
                     </View>
-                    <View style={styles.detailItem}>
-                        <Icon name="time" size={16} color="#7d7d7d" />
-                        <Text style={styles.detailText}>{item.time}</Text>
-                    </View>
+                </View>
+                <View >
+                    <TouchableOpacity style={styles.playButton}
+                       onPress={fetchComptetionInfo}
+                    >
+                        <Text style={{ color: 'white', fontWeight: 500, }}>Play Now</Text>
+                    </TouchableOpacity>
                 </View>
             </View>
 
-            <TouchableOpacity style={styles.playButton}
-                onPress={fetchComptetionInfo}
-            >
-                <Text style={{ color: 'white' }}>Play Now</Text>
-            </TouchableOpacity>
-        </View>
+        </View >
     );
 
     return (
