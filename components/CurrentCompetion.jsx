@@ -24,8 +24,7 @@ const data = [
     },
 ];
 
-const CurrentCompetion = ( {user} ) => {
-
+const CurrentCompetion = ({ user }) => {
     const navigation = useNavigation();
 
     const fetchComptetionInfo = async () => {
@@ -65,27 +64,29 @@ const CurrentCompetion = ( {user} ) => {
         <View style={styles.card}>
             <Image source={{ uri: item.image }} style={styles.thumbnail} />
             <View style={styles.info}>
-                <Text style={styles.title}>{item.title}</Text>
-                {/* <Text style={styles.author}>by {item.author}</Text> */}
-                <View style={styles.details}>
-                    <View style={styles.detailItem}>
-                        <Icon name="diamond" size={16} color="#25c50a" />
-                        <Text style={styles.detailText}>{item.points}</Text>
+                <View >
+                    <Text style={styles.title}>{item.title}</Text>
+                    <View style={styles.details}>
+                        <View style={styles.detailItem}>
+                            <Icon name="diamond" size={16} color="#25c50a" />
+                            <Text style={styles.detailText}>{item.points}</Text>
+                        </View>
+                        <View style={styles.detailItem}>
+                            <Icon name="time" size={16} color="#7d7d7d" />
+                            <Text style={styles.detailText}>{item.time}</Text>
+                        </View>
                     </View>
-                    <View style={styles.detailItem}>
-                        <Icon name="time" size={16} color="#7d7d7d" />
-                        <Text style={styles.detailText}>{item.time}</Text>
-                    </View>
+                </View>
+                <View >
+                    <TouchableOpacity style={styles.playButton}
+                       onPress={fetchComptetionInfo}
+                    >
+                        <Text style={{ color: 'white', fontWeight: 500, }}>Play Now</Text>
+                    </TouchableOpacity>
                 </View>
             </View>
 
-            <TouchableOpacity style={styles.playButton}
-                // onPress={() => navigation.navigate('play')}
-                onPress={fetchComptetionInfo}
-            >
-                <Text style={{ color: 'white' }}>Play Now</Text>
-            </TouchableOpacity>
-        </View>
+        </View >
     );
 
     return (
@@ -123,7 +124,6 @@ const styles = StyleSheet.create({
         backgroundColor: "#fff",
         borderRadius: 12,
         marginRight: 10,
-        // padding: 12,
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.1,
@@ -134,12 +134,17 @@ const styles = StyleSheet.create({
     thumbnail: {
         width: "100%",
         height: 180,
-        borderRadius: 8,
-        marginBottom: 10,
+        borderTopLeftRadius: 8,
+        borderTopRightRadius: 8,
+        marginBottom: 5,
     },
     info: {
-        flex: 1,
-        paddingHorizontal: 12,
+        width: "100%",
+        display: "flex",
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+        padding: 12,
     },
     title: {
         fontSize: 16,
@@ -154,7 +159,7 @@ const styles = StyleSheet.create({
     },
     details: {
         flexDirection: "row",
-        marginTop: 4,
+        marginTop: 3,
     },
     detailItem: {
         flexDirection: "row",
@@ -168,10 +173,9 @@ const styles = StyleSheet.create({
     },
     playButton: {
         backgroundColor: "rgb(135, 67, 254)",
-        borderRadius: 25,
-        padding: 5,
-        paddingHorizontal: 10,
+        borderRadius: 5,
+        padding: 10,
         alignSelf: 'flex-start',
-        margin: 12,
+        elevation: "",
     },
 });
