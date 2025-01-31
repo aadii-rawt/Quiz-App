@@ -9,13 +9,15 @@ const data = [
     {
         id: "1",
         title: "Beginner Math Quiz",
+        // author: "Mahmud Saimon",
         points: "500",
         time: "5min",
         image: "https://images.pexels.com/photos/3165335/pexels-photo-3165335.jpeg",
     },
     {
         id: "2",
-        title: "Inter  mediate Math Quiz",
+        title: "Intermediate Math Quiz",
+        // author: "Mahmud Saimon",
         points: "700",
         time: "10min",
         image: "https://images.pexels.com/photos/3165335/pexels-photo-3165335.jpeg",
