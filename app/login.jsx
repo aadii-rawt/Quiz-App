@@ -10,7 +10,7 @@ const Login = () => {
 
   const [phoneNumber, setPhoneNumber] = useState("")
   const [confirmation, setConfirmation] = useState(null);
-  
+
 
   const handleLogin = async () => {
     try {
@@ -45,21 +45,19 @@ const Login = () => {
             placeholderTextColor="#B0B0B0"
           />
 
-          <TouchableOpacity>
+          {/* <TouchableOpacity>
             <Text style={styles.forgotPassword}>Forgot your password?</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
           <View id="recaptcha-container" />
           <TouchableOpacity onPress={handleLogin} style={styles.signInButton}>
-            <Text style={styles.signInText}>Sign in</Text>
+            <Text style={styles.signInText}>Log in</Text>
           </TouchableOpacity>
 
           <TouchableOpacity>
-            {/* <Text> */}
             <Link href='/signup' style={styles.createAccount}>Create new account</Link>
-            {/* </Text> */}
           </TouchableOpacity>
 
-          <Text style={styles.orContinueWith}>Or continue with</Text>
+          {/* <Text style={styles.orContinueWith}>Or continue with</Text>
 
           <View style={styles.socialIconsContainer}>
             <TouchableOpacity style={styles.iconButton}>
@@ -71,7 +69,7 @@ const Login = () => {
             <TouchableOpacity style={styles.iconButton}>
               <FontAwesome name="apple" size={24} color="black" />
             </TouchableOpacity>
-          </View>
+          </View> */}
         </> :
         <OtpVerification confirmation={confirmation} phoneNumber={phoneNumber} type='login' />}
     </View>
