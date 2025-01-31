@@ -76,14 +76,22 @@ const CurrentCompetion = ({ user }) => {
                     </View>
                 </View>
                 <View >
-                    <TouchableOpacity style={styles.playButton}
-                       onPress={fetchComptetionInfo}
+                    {/* <TouchableOpacity style={styles.playButton}
+                        onPress={fetchComptetionInfo}
                     >
                         <Text style={{ color: 'white', fontWeight: 500, }}>Play Now</Text>
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
+                    <Text style={styles.timeLeftText}>53m 20s</Text>
+                    <Text style={styles.startTimeText}>01:30 PM</Text>
                 </View>
             </View>
-
+            <View style={{ margin: 10, width: "100%" }}>
+                <TouchableOpacity style={styles.playButton}
+                    onPress={fetchComptetionInfo}
+                >
+                    <Text style={{ color: 'white', fontWeight: 500, textAlign:"center" }}>Play Now</Text>
+                </TouchableOpacity>
+            </View>
         </View >
     );
 
@@ -170,10 +178,19 @@ const styles = StyleSheet.create({
         marginLeft: 4,
     },
     playButton: {
+        width: "94%",
         backgroundColor: "rgb(135, 67, 254)",
         borderRadius: 5,
         padding: 10,
-        alignSelf: 'flex-start',
         elevation: "",
+    },
+    timeLeftText: {
+        color: "red",
+        textAlign: "center",
+        fontWeight: 500,
+    },
+    startTimeText: {
+        color: "#777",
+        textAlign: "center",
     },
 });
