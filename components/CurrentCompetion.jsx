@@ -34,21 +34,7 @@ const CurrentCompetion = ({ user }) => {
                 const competitionsRef = collection(db, 'competitions');
                 const snapshot = await getDocs(competitionsRef);
                 const allCompetitions = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-
-                // Filter competitions starting today
-                console.log(allCompetitions);
-
-                const today = new Date();
-                const filteredCompetitions = allCompetitions.filter(competition => {
-                    const startTime = new Date(competition.startTime); // Ensure startTime is a valid Date object
-                    return (
-                        startTime.getFullYear() === today.getFullYear() &&
-                        startTime.getMonth() === today.getMonth() &&
-                        startTime.getDate() === today.getDate()
-                    );
-                });
-
-                setCompetitions(filteredCompetitions);
+                setCompetitions(allCompetitions);
             } catch (error) {
                 console.error("Error fetching competitions: ", error);
             }
