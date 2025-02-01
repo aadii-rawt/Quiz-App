@@ -15,6 +15,7 @@ const Result = ({ quizId = "9D95R0qdSo0hWvvaU81O" }) => {
     const fetchQuizData = async () => {
       const db = getFirestore();
       const quizRef = doc(db, "competitions", quizId);
+      // console.log('ref',quizRef);
 
       try {
         const quizDoc = await getDoc(quizRef);
