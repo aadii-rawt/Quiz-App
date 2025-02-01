@@ -51,6 +51,7 @@ const OtpVerification = ({ confirmation, username, phoneNumber, type = 'signup' 
 
                     if (userSnapshot.exists()) {
                         const userData = userSnapshot.data();
+                        
                         setUser(userData);
                         console.log('User data:', userData);
                         router.push('/')
