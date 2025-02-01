@@ -31,6 +31,46 @@ const Play = () => {
         return () => clearTimeout(timerId)
     }, [])
 
+    useEffect(()=>{
+        const fetchComptetionInfo = async (competitionId) => {
+            // console.log(competitionId);
+
+            try {
+                const userDocRef = doc(db, `competitions/${competitionId}`);
+                const userSnapshot = await getDoc(userDocRef);
+
+                if (userSnapshot.exists()) {
+                    const userData = userSnapshot.data();
+
+                    // console.log(userData);
+
+
+                    if (userData?.questions) {
+                        // Find the player whose UID matches the current user's UID
+                        const currentPlayer = userData?.players?.find(player => player.uid === user?.uid);
+
+                        if (currentPlayer) {
+                            console.log("Current User's Player Data:", currentPlayer);
+                            alert('You have already played this quiz');
+                            return;
+                        } else {
+                            // navigation.navigate('play', { competitionId });
+                            console.log("Current User's Player Data not found in the players array.");
+                        }
+                    } else {
+                        console.log("No players found in competition data.");
+                    }
+                } else {
+                    console.log("Competition document does not exist.");
+                }
+            } catch (error) {
+                console.error("Error fetching competition info:", error);
+            }
+        };
+
+        fetchComptetionInfo();
+    },[])
+
     const joinCompetiton = async () => {
         if (!user) {
             return alert("Please login")
@@ -181,7 +221,7 @@ const Play = () => {
 
             {/* Question Section */}
             <View style={styles.questionContainer}>
-                <Text style={styles.questionText}>{currentQuestion.question}</Text>
+                <Text style={styles.questionText}>{currentQuestion?.question}</Text>
             </View>
 
             {/* Options Section */}
