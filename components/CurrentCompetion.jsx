@@ -1,8 +1,8 @@
 import { StyleSheet, Text, View, FlatList, TouchableOpacity, Image } from 'react-native';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Icon from "react-native-vector-icons/Ionicons";
 import { Link, useNavigation } from 'expo-router';
-import { doc, getDoc } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs } from 'firebase/firestore';
 import { db } from '@/firebase';
 
 const data = [
@@ -26,6 +26,36 @@ const data = [
 
 const CurrentCompetion = ({ user }) => {
     const navigation = useNavigation();
+    const [competitions, setCompetitions] = useState(null)
+
+    useEffect(() => {
+        const fetchCompetitions = async () => {
+            try {
+                const competitionsRef = collection(db, 'competitions');
+                const snapshot = await getDocs(competitionsRef);
+                const allCompetitions = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+                // Filter competitions starting today
+                console.log(allCompetitions);
+
+                const today = new Date();
+                const filteredCompetitions = allCompetitions.filter(competition => {
+                    const startTime = new Date(competition.startTime); // Ensure startTime is a valid Date object
+                    return (
+                        startTime.getFullYear() === today.getFullYear() &&
+                        startTime.getMonth() === today.getMonth() &&
+                        startTime.getDate() === today.getDate()
+                    );
+                });
+
+                setCompetitions(filteredCompetitions);
+            } catch (error) {
+                console.error("Error fetching competitions: ", error);
+            }
+        };
+
+        fetchCompetitions();
+    }, []);
 
     const fetchComptetionInfo = async () => {
         const compId = '9D95R0qdSo0hWvvaU81O';
@@ -62,36 +92,31 @@ const CurrentCompetion = ({ user }) => {
 
     const renderItem = ({ item }) => (
         <View style={styles.card}>
-            <Image source={{ uri: item.image }} style={styles.thumbnail} />
+            <Image source="https://images.pexels.com/photos/3165335/pexels-photo-3165335.jpeg" style={styles.thumbnail} />
             <View style={styles.info}>
                 <View >
-                    <Text style={styles.title}>{item.title}</Text>
+                    <Text style={styles.title}>{item.competitionName}</Text>
                     <View style={styles.details}>
                         <View style={styles.detailItem}>
                             <Icon name="diamond" size={16} color="#25c50a" />
-                            <Text style={styles.detailText}>{item.points}</Text>
+                            <Text style={styles.detailText}>{item.prize}</Text>
                         </View>
                         <View style={styles.detailItem}>
                             <Icon name="time" size={16} color="#7d7d7d" />
-                            <Text style={styles.detailText}>{item.time}</Text>
+                            <Text style={styles.detailText}>{item.duration}</Text>
                         </View>
                     </View>
                 </View>
                 <View >
-                    {/* <TouchableOpacity style={styles.playButton}
-                        onPress={fetchComptetionInfo}
-                    >
-                        <Text style={{ color: 'white', fontWeight: 500, }}>Play Now</Text>
-                    </TouchableOpacity> */}
                     <Text style={styles.timeLeftText}>53m 20s</Text>
-                    <Text style={styles.startTimeText}>01:30 PM</Text>
+                    <Text style={styles.startTimeText}>01:20 PM</Text>
                 </View>
             </View>
             <View style={{ margin: 10, width: "100%" }}>
                 <TouchableOpacity style={styles.playButton}
                     onPress={fetchComptetionInfo}
                 >
-                    <Text style={{ color: 'white', fontWeight: 500, textAlign:"center" }}>Play Now</Text>
+                    <Text style={{ color: 'white', fontWeight: 500, textAlign: "center" }}>Regiseter Now</Text>
                 </TouchableOpacity>
             </View>
         </View >
@@ -101,7 +126,7 @@ const CurrentCompetion = ({ user }) => {
         <View style={styles.container}>
             <Text style={{ fontSize: 16, fontWeight: 'bold', marginBottom: 10 }}>Current Competitions</Text>
             <FlatList
-                data={data}
+                data={competitions}
                 renderItem={renderItem}
                 keyExtractor={(item) => item.id}
                 horizontal
