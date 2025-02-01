@@ -5,31 +5,14 @@ import { useUserAuth } from "./context/useAuthContext";
 import Connecting from "./connecting";
 import { db } from "../firebase";
 import { doc, getDoc, updateDoc, arrayUnion, } from "firebase/firestore";
-
-const questions = [
-    {
-        id: 1,
-        question: "What is the capital of France?",
-        options: ["Paris", "London", "Berlin", "Madrid"],
-        correctAnswer: "Paris",
-    },
-    {
-        id: 2,
-        question: "What is 5 + 3?",
-        options: ["5", "8", "10", "7"],
-        correctAnswer: "8",
-    },
-    {
-        id: 3,
-        question: "Which planet is known as the Red Planet?",
-        options: ["Earth", "Mars", "Jupiter", "Venus"],
-        correctAnswer: "Mars",
-    },
-];
+import { useRoute } from "@react-navigation/native";
 
 const Play = () => {
 
     const { user } = useUserAuth();
+
+    const route = useRoute();
+    const { competitionId } = route.params; // Extract competitionId
     const navigation = useNavigation()
 
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -37,9 +20,10 @@ const Play = () => {
     const [showScore, setShowScore] = useState(false);
     const [timeLeft, setTimeLeft] = useState(10);
     const [loading, setLoading] = useState(true);
+    const [questions, setQuestions] = useState([]);
 
     console.log(user);
-    
+
     useEffect(() => {
         const timerId = setTimeout(() => {
             setLoading(false)
@@ -53,7 +37,7 @@ const Play = () => {
         }
 
         try {
-            const competitionRef = doc(db, "competitions", "9D95R0qdSo0hWvvaU81O");
+            const competitionRef = doc(db, "competitions", competitionId);
             await updateDoc(competitionRef, {
                 players: arrayUnion({
                     uid: user.uid,
@@ -67,8 +51,27 @@ const Play = () => {
         }
     }
 
+    const fetchQuizData = async () => {
+        try {
+            const userDocRef = doc(db, `competitions/${competitionId}`);
+            const userSnapshot = await getDoc(userDocRef);
+
+            const userData = userSnapshot.data();
+
+            setQuestions(userData?.questions)
+            console.log('data',userData);
+
+        } catch (err) {
+            console.error(err.message);
+            
+        }
+    }
+
     useEffect(() => {
         joinCompetiton()
+        fetchQuizData();
+        // console.log('competitionId', competitionId);
+
     }, [])
 
     useEffect(() => {
@@ -88,7 +91,7 @@ const Play = () => {
             setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
             setTimeLeft(10); // Reset timer for next question
         } else {
-            navigation.navigate("result")
+            navigation.navigate("result", {competitionId})
         }
     };
 
@@ -106,7 +109,6 @@ const Play = () => {
 
     const updatePlayerScore = async (newScore) => {
         try {
-            const competitionId = "9D95R0qdSo0hWvvaU81O"; // Replace with the actual competition ID
             const competitionRef = doc(db, "competitions", competitionId);
 
             // Fetch the current competition document

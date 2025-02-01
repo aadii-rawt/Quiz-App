@@ -3,18 +3,23 @@ import React, { useEffect, useState } from "react";
 import { Link } from "expo-router";
 import { getFirestore, doc, getDoc } from "firebase/firestore";
 import { db } from "../firebase";
+import { useRoute } from "@react-navigation/native";
 
-const Result = ({ quizId = "9D95R0qdSo0hWvvaU81O" }) => {
+const Result = () => {
+
+  const route = useRoute();
+  const { competitionId } = route.params; // Extract competitionId
+
   const [loading, setLoading] = useState(true);
   const [isTimeOver, setIsTimeOver] = useState(false);
   const [players, setPlayers] = useState([]);
   const [yourScore, setYourScore] = useState(0);
   const [usernames, setUsernames] = useState({});
-  
+
   useEffect(() => {
     const fetchQuizData = async () => {
       const db = getFirestore();
-      const quizRef = doc(db, "competitions", quizId);
+      const quizRef = doc(db, "competitions", competitionId);
       // console.log('ref',quizRef);
 
       try {
@@ -60,7 +65,7 @@ const Result = ({ quizId = "9D95R0qdSo0hWvvaU81O" }) => {
               );
 
               console.log(usernamesMap);
-              
+
             };
 
             fetchUserDetails();
@@ -79,7 +84,7 @@ const Result = ({ quizId = "9D95R0qdSo0hWvvaU81O" }) => {
     };
 
     fetchQuizData();
-  }, [quizId]);
+  }, [competitionId]);
 
   if (loading) {
     return (
@@ -113,11 +118,11 @@ const Result = ({ quizId = "9D95R0qdSo0hWvvaU81O" }) => {
       <Text style={styles.rankTitle}>Leaderboard:</Text>
       {players.map((player) => (
         <Text key={player.uid} style={styles.rankText}>
-          <Text style={{display: 'flex', alignItems: 'center', gap: '4px'}}>
+          <Text style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
             {player.rank}.
 
-            <Text style={styles.userProfile}>{player?.username?.slice(0,1)}</Text>
-            
+            <Text style={styles.userProfile}>{player?.username?.slice(0, 1)}</Text>
+
             {player?.username}
           </Text>
           {player.score} points

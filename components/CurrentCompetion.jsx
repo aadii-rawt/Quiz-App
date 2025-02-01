@@ -58,27 +58,29 @@ const CurrentCompetion = ({ user }) => {
         fetchCompetitions();
     }, []);
 
-
     const fetchComptetionInfo = async () => {
         const compId = '9D95R0qdSo0hWvvaU81O';
 
         try {
-            const userDocRef = doc(db, `competitions/${compId}`);
+            const userDocRef = doc(db, `competitions/${competitionId}`);
             const userSnapshot = await getDoc(userDocRef);
 
             if (userSnapshot.exists()) {
                 const userData = userSnapshot.data();
 
-                if (userData?.players) {
-                    // Find the player whose UID matches the current user's UID
-                    const currentPlayer = userData.players.find(player => player.uid === user?.uid);
+                console.log(userData);
+                
 
+                if (userData?.questions) {
+                    // Find the player whose UID matches the current user's UID
+                    const currentPlayer = userData?.players?.find(player => player.uid === user?.uid);
+                    
                     if (currentPlayer) {
                         console.log("Current User's Player Data:", currentPlayer);
                         alert('You have already played this quiz');
                         return;
                     } else {
-                        navigation.navigate('play')
+                        navigation.navigate('play', {competitionId});
                         console.log("Current User's Player Data not found in the players array.");
                     }
                 } else {
