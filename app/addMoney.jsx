@@ -5,10 +5,13 @@ import WebView from 'react-native-webview';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { useUserAuth } from './context/useAuthContext';
+import { useNavigation } from 'expo-router';
 
 const AddMoney = () => {
+
     const [isLoading, setIsLoading] = useState(false);
     const { user } = useUserAuth();
+    const navigation = useNavigation()
 
     // Function to save transaction to database
     const saveTransaction = async (paymentData, amount) => {
@@ -82,6 +85,7 @@ const AddMoney = () => {
             );
         } finally {
             setIsLoading(false);
+            navigation.navigate("wallet")
         }
     };
 
