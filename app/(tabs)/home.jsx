@@ -5,7 +5,7 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import Slider from '../../components/Slider';
 import ActiveQuiz from '../../components/ActiveQuiz';
 import CurrentCompetion from '../../components/CurrentCompetion'
-import { Link } from 'expo-router';
+import { Link, useNavigation } from 'expo-router';
 import { useUserAuth } from '../context/useAuthContext';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../../firebase';
@@ -14,6 +14,7 @@ const Home = () => {
 
     const {user} = useUserAuth();
     const [userData , setUserData] = useState();
+    const navigation = useNavigation()
 
     const fetchUser = async () => {
         const userDocRef = doc(db, `users/${user?.uid}`);
@@ -43,8 +44,11 @@ const Home = () => {
                     </View>
                 </View>
                 <View style={styles.coins}>
+                    <TouchableOpacity onPress={() => navigation.navigate("wallet")}>
                     <MaterialIcons name="account-balance-wallet" size={24} color="white" />
-                    <Text style={styles.coinText}>1200</Text>
+                    <Text style={styles.coinText} >1200</Text>
+
+                    </TouchableOpacity>
                 </View>
             </View>
 
