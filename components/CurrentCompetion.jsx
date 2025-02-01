@@ -35,6 +35,8 @@ const CurrentCompetion = ({ user }) => {
                 const snapshot = await getDocs(competitionsRef);
                 const allCompetitions = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 setCompetitions(allCompetitions);
+                console.log(competitions);
+
             } catch (error) {
                 console.error("Error fetching competitions: ", error);
             }
@@ -43,26 +45,29 @@ const CurrentCompetion = ({ user }) => {
         fetchCompetitions();
     }, []);
 
-    const fetchComptetionInfo = async () => {
-        const compId = '9D95R0qdSo0hWvvaU81O';
+    const fetchComptetionInfo = async (competitionId) => {
+        console.log(competitionId);
 
         try {
-            const userDocRef = doc(db, `competitions/${compId}`);
+            const userDocRef = doc(db, `competitions/${competitionId}`);
             const userSnapshot = await getDoc(userDocRef);
 
             if (userSnapshot.exists()) {
                 const userData = userSnapshot.data();
 
-                if (userData?.players) {
-                    // Find the player whose UID matches the current user's UID
-                    const currentPlayer = userData.players.find(player => player.uid === user?.uid);
+                console.log(userData);
+                
 
+                if (userData?.questions) {
+                    // Find the player whose UID matches the current user's UID
+                    const currentPlayer = userData?.players?.find(player => player.uid === user?.uid);
+                    
                     if (currentPlayer) {
                         console.log("Current User's Player Data:", currentPlayer);
                         alert('You have already played this quiz');
                         return;
                     } else {
-                        navigation.navigate('play')
+                        navigation.navigate('play', {competitionId});
                         console.log("Current User's Player Data not found in the players array.");
                     }
                 } else {
@@ -100,7 +105,7 @@ const CurrentCompetion = ({ user }) => {
             </View>
             <View style={{ margin: 10, width: "100%" }}>
                 <TouchableOpacity style={styles.playButton}
-                    onPress={fetchComptetionInfo}
+                    onPress={() => fetchComptetionInfo(item?.competitionId)}
                 >
                     <Text style={{ color: 'white', fontWeight: 500, textAlign: "center" }}>Regiseter Now</Text>
                 </TouchableOpacity>

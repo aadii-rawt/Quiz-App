@@ -1,4 +1,6 @@
-import React from "react";
+import { db } from "@/firebase";
+import { collection, getDocs } from "firebase/firestore";
+import React, { useEffect, useState } from "react";
 import { View, Text, Image, FlatList, StyleSheet, TouchableOpacity } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 
@@ -46,16 +48,36 @@ const data = [
 ];
 
 const ActiveQuiz = () => {
+
+    const [competition, setCompetitions] = useState([]);
+
+     useEffect(() => {
+            const fetchCompetitions = async () => {
+                try {
+                    const competitionsRef = collection(db, 'competitions');
+                    const snapshot = await getDocs(competitionsRef);
+                    const allCompetitions = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    setCompetitions(allCompetitions);
+                    // console.log(competition);
+                    
+                } catch (error) {
+                    console.error("Error fetching competitions: ", error);
+                }
+            };
+    
+            fetchCompetitions();
+        }, []);
+    
     const renderItem = ({ item }) => (
         <View style={styles.card}>
-            <Image source={{uri: item.image}} style={styles.thumbnail} />
+            <Image source={{ uri: 'https://images.pexels.com/photos/3165335/pexels-photo-3165335.jpeg'}} style={styles.thumbnail} />
             <View style={styles.info}>
-                <Text style={styles.title}>{item.title}</Text>
-                <Text style={styles.author}>by {item.author}</Text>
+                <Text style={styles.title}>{item.competitionName}</Text>
+                {/* <Text style={styles.author}>by {item.author}</Text> */}
                 <View style={styles.details}>
                     <View style={styles.detailItem}>
                         <Icon name="diamond" size={16} color="#7d7d7d" />
-                        <Text style={styles.detailText}>{item.points}</Text>
+                        <Text style={styles.detailText}>{item.prize || item.winningAmount}</Text>
                     </View>
                     <View style={styles.detailItem}>
                         <Icon name="time" size={16} color="#7d7d7d" />
@@ -72,7 +94,7 @@ const ActiveQuiz = () => {
     return (
         <View style={styles.container}>
             <FlatList
-                data={data}
+                data={competition}
                 renderItem={renderItem}
                 keyExtractor={(item) => item.id}
                 // ListFooterComponent={<Text style={styles.loadMore}>LOAD MORE</Text>}
