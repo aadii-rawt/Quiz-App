@@ -5,28 +5,28 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import Slider from '../../components/Slider';
 import ActiveQuiz from '../../components/ActiveQuiz';
 import CurrentCompetion from '../../components/CurrentCompetion'
-import { Link } from 'expo-router';
+import { Link, useNavigation } from 'expo-router';
 import { useUserAuth } from '../context/useAuthContext';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../../firebase';
 
 const Home = () => {
 
-    const {user} = useUserAuth();
-    const [userData , setUserData] = useState();
+    const { user } = useUserAuth();
+    const [userData, setUserData] = useState();
+    const navigation = useNavigation()
 
     const fetchUser = async () => {
         const userDocRef = doc(db, `users/${user?.uid}`);
         const userSnapshot = await getDoc(userDocRef);
-
         const userData = userSnapshot.data();
         setUserData(userData);
         console.log(userData);
     }
 
-    useEffect(()=>{
+    useEffect(() => {
         fetchUser();
-    },[user])
+    }, [user])
 
     return (
         <ScrollView style={styles.container}>
@@ -37,14 +37,17 @@ const Home = () => {
                         source={{ uri: 'https://imgcdn.stablediffusionweb.com/2024/9/8/9bc3b58a-aca9-4f88-9ecc-6ea2217f7790.jpg' }} // Replace with profile image URI
                         style={styles.profileImage}
                     />
-                    <View style={{display: 'flex', gap: '5px', flexDirection: 'row', alignItems: 'center'}}>
+                    <View style={{ display: 'flex', gap: '5px', flexDirection: 'row', alignItems: 'center' }}>
                         <Text style={styles.greeting}>Hello!</Text>
                         <Text style={styles.userName}>{userData?.username}</Text>
                     </View>
                 </View>
                 <View style={styles.coins}>
-                    <MaterialIcons name="account-balance-wallet" size={24} color="white" />
-                    <Text style={styles.coinText}>1200</Text>
+                    <TouchableOpacity style={{ display: 'flex', flexDirection: "row", }} onPress={() => navigation.navigate("wallet")}>
+                        <MaterialIcons name="account-balance-wallet" size={24} color="white" />
+                        <Text style={styles.coinText} >{userData?.wallet}</Text>
+
+                    </TouchableOpacity>
                 </View>
             </View>
 
@@ -66,7 +69,7 @@ const Home = () => {
                     // background: 'rgb(135, 67, 254)',
                     backgroundColor: 'linear-gradient(0deg, rgba(135, 67, 254, 1) 35%, rgba(161, 127, 220, 1) 100%)'
                 }]}
-                    // onPress={() => navigation.navigate('soloQuiz')}
+                // onPress={() => navigation.navigate('soloQuiz')}
                 >
                     <FontAwesome5 name="user-alt" size={24} color="#fff" />
                     <Text style={styles.buttonText}>Solo Mode</Text>

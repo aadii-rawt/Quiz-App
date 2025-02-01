@@ -3,17 +3,47 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'reac
 import { FontAwesome } from '@expo/vector-icons';
 import { Link } from 'expo-router';
 import { RecaptchaVerifier, signInWithPhoneNumber } from 'firebase/auth';
-import { auth } from '../firebase';
+import { auth, db } from '../firebase';
 import OtpVerification from './otpVerification';
+import { collection, getDocs, query, where } from 'firebase/firestore';
 
 const Login = () => {
 
   const [phoneNumber, setPhoneNumber] = useState("")
   const [confirmation, setConfirmation] = useState(null);
+  const [error, setError] = useState("")
 
+  // const handleLogin = async () => {
+  //   try {
+  //     const recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+  //       'size': 'normal',
+  //       'callback': (response) => {
+  //         console.log('Recaptcha verified:', response);
+  //       },
+  //     });
+
+  //     const confirmationResult = await signInWithPhoneNumber(auth, phoneNumber, recaptchaVerifier);
+  //     setConfirmation(confirmationResult);
+  //     console.log(confirmationResult);
+  //   } catch (error) {
+  //     alert('Error', error.message);
+  //     console.log(error);
+  //   }
+  // }
 
   const handleLogin = async () => {
     try {
+      // Step 1: Check if phone number exists in Firestore
+      const usersRef = collection(db, "users");
+      const q = query(usersRef, where("phoneNumber", "==", phoneNumber));
+      const querySnapshot = await getDocs(q);
+
+      if (querySnapshot.empty) {
+        setError("can't Find user")
+        return;
+      }
+
+      // Step 2: Proceed with OTP verification
       const recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
         'size': 'normal',
         'callback': (response) => {
@@ -25,10 +55,10 @@ const Login = () => {
       setConfirmation(confirmationResult);
       console.log(confirmationResult);
     } catch (error) {
-      alert('Error', error.message);
       console.log(error);
     }
-  }
+  };
+
 
   return (
     <View style={styles.container}>
@@ -48,6 +78,7 @@ const Login = () => {
           {/* <TouchableOpacity>
             <Text style={styles.forgotPassword}>Forgot your password?</Text>
           </TouchableOpacity> */}
+          {error && <Text style={{ color: "red", textAlign: "left", padding: 1 }}>{error}</Text>}
           <View id="recaptcha-container" />
           <TouchableOpacity onPress={handleLogin} style={styles.signInButton}>
             <Text style={styles.signInText}>Log in</Text>

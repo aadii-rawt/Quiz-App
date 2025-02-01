@@ -2,18 +2,49 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { Link, useNavigation } from 'expo-router';
-import { auth } from '../firebase';
+import { auth, db } from '../firebase';
 import { RecaptchaVerifier, signInWithPhoneNumber } from 'firebase/auth';
 import OtpVerification from './otpVerification';
+import { collection, getDocs, query, where } from 'firebase/firestore';
 
 const Signup = () => {
   const [username, setUsername] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("")
   const [confirmation, setConfirmation] = useState(null);
+  const [error, setError] = useState("")
 
   const navigation = useNavigation()
   const handleSignup = async () => {
+    // try {
+    //   const recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+    //     'size': 'normal',
+    //     'callback': (response) => {
+    //       console.log('Recaptcha verified:', response);
+    //     },
+    //   });
+
+    //   const confirmationResult = await signInWithPhoneNumber(auth, phoneNumber, recaptchaVerifier);
+    //   setConfirmation(confirmationResult);
+    //   console.log(confirmationResult);
+
+    //   Alert.alert('OTP Sent', 'Please check your phone for the OTP.');
+    // } catch (error) {
+    //   Alert.alert('Error', error.message);
+    //   console.log(error);
+    // }
+
     try {
+      // Step 1: Check if phone number already exists
+      const usersRef = collection(db, "users");
+      const q = query(usersRef, where("phoneNumber", "==", phoneNumber));
+      const querySnapshot = await getDocs(q);
+
+      if (!querySnapshot.empty) {
+        setError("Phone number already in use.")
+        return;
+      }
+
+      // Step 2: If phone number is not found, proceed with OTP verification
       const recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
         'size': 'normal',
         'callback': (response) => {
@@ -24,10 +55,7 @@ const Signup = () => {
       const confirmationResult = await signInWithPhoneNumber(auth, phoneNumber, recaptchaVerifier);
       setConfirmation(confirmationResult);
       console.log(confirmationResult);
-
-      Alert.alert('OTP Sent', 'Please check your phone for the OTP.');
     } catch (error) {
-      Alert.alert('Error', error.message);
       console.log(error);
     }
   }
@@ -54,6 +82,7 @@ const Signup = () => {
             placeholderTextColor="#B0B0B0"
           />
 
+          {error && <Text style={{color : "red", textAlign : "left", padding: 1}}>{error}</Text>}
           <View id="recaptcha-container" />
           <TouchableOpacity onPress={handleSignup} style={styles.signupButton}>
             <Text style={styles.signupText}>Sign up</Text>
@@ -77,7 +106,7 @@ const Signup = () => {
             </TouchableOpacity>
           </View>
         </>) :
-        <OtpVerification confirmation={confirmation} username={username} phoneNumber={phoneNumber}/>}
+        <OtpVerification confirmation={confirmation} username={username} phoneNumber={phoneNumber} />}
     </View>
   );
 };

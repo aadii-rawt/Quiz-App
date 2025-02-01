@@ -34,9 +34,22 @@ const CurrentCompetion = ({ user }) => {
                 const competitionsRef = collection(db, 'competitions');
                 const snapshot = await getDocs(competitionsRef);
                 const allCompetitions = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                setCompetitions(allCompetitions);
-                console.log(competitions);
 
+                // Get today's date at midnight
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+
+                // Filter competitions starting today
+                const filteredCompetitions = allCompetitions.filter(competition => {
+                    if (!competition.startTime?.seconds) return false; // Ensure startTime exists
+
+                    const startTime = new Date(competition.startTime.seconds * 1000); // Convert Firebase Timestamp to Date
+                    startTime.setHours(0, 0, 0, 0); // Normalize to midnight
+
+                    return startTime.getTime() === today.getTime(); // Check if start date is today
+                });
+
+                setCompetitions(filteredCompetitions);
             } catch (error) {
                 console.error("Error fetching competitions: ", error);
             }
@@ -81,37 +94,66 @@ const CurrentCompetion = ({ user }) => {
         }
     };
 
-    const renderItem = ({ item }) => (
-        <View style={styles.card}>
-            <Image source="https://images.pexels.com/photos/3165335/pexels-photo-3165335.jpeg" style={styles.thumbnail} />
-            <View style={styles.info}>
-                <View >
-                    <Text style={styles.title}>{item.competitionName}</Text>
-                    <View style={styles.details}>
-                        <View style={styles.detailItem}>
-                            <Icon name="diamond" size={16} color="#25c50a" />
-                            <Text style={styles.detailText}>{item.prize}</Text>
-                        </View>
-                        <View style={styles.detailItem}>
-                            <Icon name="time" size={16} color="#7d7d7d" />
-                            <Text style={styles.detailText}>{item.duration}</Text>
+    const handleNavigateToRegister = () => {
+        navigation.navigate('register', { competitionId : "jhdkjfhskdjfh" });
+    };
+
+    const renderItem = ({ item }) => {
+        const startTime = new Date(item?.startTime.seconds * 1000);
+        const now = new Date();
+        const isRegistered = item?.registeredUsers?.some(u => u.uid === user?.uid);
+        const canPlay = now >= startTime;
+        const formatTime = (timestamp) => {
+            const date = new Date(timestamp.seconds * 1000);
+            return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+        };
+        
+
+
+        return (
+            <View style={styles.card}>
+                <Image source="https://images.pexels.com/photos/3165335/pexels-photo-3165335.jpeg" style={styles.thumbnail} />
+                <View style={styles.info}>
+                    <View >
+                        <Text style={styles.title}>{item.competitionName}</Text>
+                        <View style={styles.details}>
+                            <View style={styles.detailItem}>
+                                <Icon name="diamond" size={16} color="#25c50a" />
+                                <Text style={styles.detailText}>{item.prize}</Text>
+                            </View>
+                            <View style={styles.detailItem}>
+                                <Icon name="time" size={16} color="#7d7d7d" />
+                                <Text style={styles.detailText}>{item.duration}</Text>
+                            </View>
                         </View>
                     </View>
+                    <View >
+                        <Text style={styles.timeLeftText}>53m 20s</Text>
+                        <Text style={styles.startTimeText}>{formatTime(item.startTime)}</Text>
+                    </View>
                 </View>
-                <View >
-                    <Text style={styles.timeLeftText}>53m 20s</Text>
-                    <Text style={styles.startTimeText}>01:20 PM</Text>
+                <View style={{ margin: 10, width: "100%" }}>
+                    <TouchableOpacity style={styles.playButton}
+                        onPress={fetchComptetionInfo}
+                    >
+                        <Text style={{ color: 'white', fontWeight: 500, textAlign: "center" }}>Regiseter Now</Text>
+                    </TouchableOpacity>
+
+                    {/* {canPlay ? (
+                        <TouchableOpacity style={styles.playButton} onPress={() => navigation.navigate('PlayScreen', { competitionId: item.id })}>
+                            <Text style={{ color: 'white', fontWeight: 500, textAlign: "center" }}>Play</Text>
+                        </TouchableOpacity>
+                    ) : !isRegistered ? (
+                        <TouchableOpacity style={styles.playButton} onPress={() => handleRegister(item.id)}>
+                            <Text style={{ color: 'white', fontWeight: 500, textAlign: "center" }}>Register Now</Text>
+                        </TouchableOpacity>
+                    ) : (
+                        <Text sstyle={{ color: 'white', fontWeight: 500, textAlign: "center" }}>Registered</Text>
+                    )} */}
                 </View>
-            </View>
-            <View style={{ margin: 10, width: "100%" }}>
-                <TouchableOpacity style={styles.playButton}
-                    onPress={() => fetchComptetionInfo(item?.competitionId)}
-                >
-                    <Text style={{ color: 'white', fontWeight: 500, textAlign: "center" }}>Regiseter Now</Text>
-                </TouchableOpacity>
-            </View>
-        </View >
-    );
+            </View >
+        )
+    };
 
     return (
         <View style={styles.container}>
