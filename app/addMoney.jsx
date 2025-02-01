@@ -126,7 +126,7 @@ const AddMoney = () => {
             };
         } else {
             const htmlContent = `
-        <!DOCTYPE html>
+    <!DOCTYPE html>
         <html>
           <head>
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -165,7 +165,7 @@ const AddMoney = () => {
                     onMessage={(event) => {
                         const response = JSON.parse(event.nativeEvent.data);
                         handlePaymentSuccess(response, amount);
-                        
+
                     }}
                     style={{ flex: 1 }}
                 />

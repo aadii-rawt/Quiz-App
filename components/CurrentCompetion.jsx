@@ -58,8 +58,8 @@ const CurrentCompetion = ({ user }) => {
         fetchCompetitions();
     }, []);
 
-    const fetchComptetionInfo = async () => {
-        const compId = '9D95R0qdSo0hWvvaU81O';
+    const fetchComptetionInfo = async (competitionId) => {
+        console.log(competitionId);
 
         try {
             const userDocRef = doc(db, `competitions/${competitionId}`);
@@ -133,13 +133,13 @@ const CurrentCompetion = ({ user }) => {
                     </View>
                 </View>
                 <View style={{ margin: 10, width: "100%" }}>
-                    {/* <TouchableOpacity style={styles.playButton}
+                    <TouchableOpacity style={styles.playButton}
                         onPress={fetchComptetionInfo}
                     >
                         <Text style={{ color: 'white', fontWeight: 500, textAlign: "center" }}>Regiseter Now</Text>
-                    </TouchableOpacity> */}
+                    </TouchableOpacity>
 
-                    {canPlay ? (
+                    {/* {canPlay ? (
                         <TouchableOpacity style={styles.playButton} onPress={() => navigation.navigate('PlayScreen', { competitionId: item.id })}>
                             <Text style={{ color: 'white', fontWeight: 500, textAlign: "center" }}>Play</Text>
                         </TouchableOpacity>
@@ -149,7 +149,7 @@ const CurrentCompetion = ({ user }) => {
                         </TouchableOpacity>
                     ) : (
                         <Text sstyle={{ color: 'white', fontWeight: 500, textAlign: "center" }}>Registered</Text>
-                    )}
+                    )} */}
                 </View>
             </View >
         )
