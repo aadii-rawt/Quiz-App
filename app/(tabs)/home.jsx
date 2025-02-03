@@ -12,21 +12,21 @@ import { db } from '../../firebase';
 
 const Home = () => {
 
-    const { user } = useUserAuth();
-    const [userData, setUserData] = useState();
+    const { user,userData } = useUserAuth();
+    // const [userData, setUserData] = useState();
     const navigation = useNavigation()
 
-    const fetchUser = async () => {
-        const userDocRef = doc(db, `users/${user?.uid}`);
-        const userSnapshot = await getDoc(userDocRef);
-        const userData = userSnapshot.data();
-        setUserData(userData);
-        console.log(userData);
-    }
-
-    useEffect(() => {
-        fetchUser();
-    }, [user])
+    // const fetchUser = async () => {
+    //     const userDocRef = doc(db, `users/${user?.uid}`);
+    //     const userSnapshot = await getDoc(userDocRef);
+    //     const userData = userSnapshot.data();
+    //     setUserData(userData);
+    //     console.log(userData);
+    // }
+    
+    // useEffect(() => {
+    //     fetchUser();
+    // }, [user])
 
     return (
         <ScrollView style={styles.container}>
