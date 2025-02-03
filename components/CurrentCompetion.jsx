@@ -50,6 +50,8 @@ const CurrentCompetion = ({ user }) => {
                 });
 
                 setCompetitions(filteredCompetitions);
+                console.log('comp',competitions);
+                
             } catch (error) {
                 console.error("Error fetching competitions: ", error);
             }
@@ -134,7 +136,7 @@ const CurrentCompetion = ({ user }) => {
                 </View>
                 <View style={{ margin: 10, width: "100%" }}>
                     <TouchableOpacity style={styles.playButton}
-                        onPress={fetchComptetionInfo}
+                        onPress={()=>fetchComptetionInfo(item?.competitionId)}
                     >
                         <Text style={{ color: 'white', fontWeight: 500, textAlign: "center" }}>Regiseter Now</Text>
                     </TouchableOpacity>
