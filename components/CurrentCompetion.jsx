@@ -50,8 +50,8 @@ const CurrentCompetion = ({ user }) => {
                 });
 
                 setCompetitions(filteredCompetitions);
-                console.log('comp',competitions);
-                
+                console.log('comp', competitions);
+
             } catch (error) {
                 console.error("Error fetching competitions: ", error);
             }
@@ -60,44 +60,44 @@ const CurrentCompetion = ({ user }) => {
         fetchCompetitions();
     }, []);
 
-    const fetchComptetionInfo = async (competitionId) => {
-        console.log(competitionId);
+    // const fetchComptetionInfo = async (competitionId) => {
+    //     console.log(competitionId);
 
-        try {
-            const userDocRef = doc(db, `competitions/${competitionId}`);
-            const userSnapshot = await getDoc(userDocRef);
+    //     try {
+    //         const userDocRef = doc(db, `competitions/${competitionId}`);
+    //         const userSnapshot = await getDoc(userDocRef);
 
-            if (userSnapshot.exists()) {
-                const userData = userSnapshot.data();
+    //         if (userSnapshot.exists()) {
+    //             const userData = userSnapshot.data();
 
-                console.log(userData);
-                
+    //             console.log(userData);
 
-                if (userData?.questions) {
-                    // Find the player whose UID matches the current user's UID
-                    const currentPlayer = userData?.players?.find(player => player.uid === user?.uid);
-                    
-                    if (currentPlayer) {
-                        console.log("Current User's Player Data:", currentPlayer);
-                        alert('You have already played this quiz');
-                        return;
-                    } else {
-                        navigation.navigate('play', {competitionId});
-                        console.log("Current User's Player Data not found in the players array.");
-                    }
-                } else {
-                    console.log("No players found in competition data.");
-                }
-            } else {
-                console.log("Competition document does not exist.");
-            }
-        } catch (error) {
-            console.error("Error fetching competition info:", error);
-        }
-    };
+
+    //             if (userData?.questions) {
+    //                 // Find the player whose UID matches the current user's UID
+    //                 const currentPlayer = userData?.players?.find(player => player.uid === user?.uid);
+
+    //                 if (currentPlayer) {
+    //                     console.log("Current User's Player Data:", currentPlayer);
+    //                     alert('You have already played this quiz');
+    //                     return;
+    //                 } else {
+    //                     navigation.navigate('play', {competitionId});
+    //                     console.log("Current User's Player Data not found in the players array.");
+    //                 }
+    //             } else {
+    //                 console.log("No players found in competition data.");
+    //             }
+    //         } else {
+    //             console.log("Competition document does not exist.");
+    //         }
+    //     } catch (error) {
+    //         console.error("Error fetching competition info:", error);
+    //     }
+    // };
 
     const handleNavigateToRegister = () => {
-        navigation.navigate('register', { competitionId : "jhdkjfhskdjfh" });
+        navigation.navigate('register', { competitionId: "jhdkjfhskdjfh" });
     };
 
     const renderItem = ({ item }) => {
@@ -109,7 +109,7 @@ const CurrentCompetion = ({ user }) => {
             const date = new Date(timestamp.seconds * 1000);
             return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
         };
-        
+
 
 
         return (
@@ -136,7 +136,8 @@ const CurrentCompetion = ({ user }) => {
                 </View>
                 <View style={{ margin: 10, width: "100%" }}>
                     <TouchableOpacity style={styles.playButton}
-                        onPress={()=>fetchComptetionInfo(item?.competitionId)}
+                        onPress={() => navigation.navigate("register", { competitionId: item?.competitionId })}
+                    // onPress={()=>fetchComptetionInfo(item?.competitionId)}
                     >
                         <Text style={{ color: 'white', fontWeight: 500, textAlign: "center" }}>Regiseter Now</Text>
                     </TouchableOpacity>
