@@ -51,15 +51,13 @@ const TodayCompetitions = () => {
         fetchCompetitions();
     }, []);
     
-
-
     const renderItem = ({ item }) => {
         const isRegistered = item?.registeredUsers?.some(user => user.userId == userData?.userId);
         const startTime = item.startTime.seconds * 1000;
         const hasStarted = currentTime >= startTime;
 
         return (
-            <View style={{ padding: 15, backgroundColor: "#fff", marginBottom: 10, borderRadius: 8, elevation: 3 }}>
+            <View style={styles.card}>
                 <Image source="https://images.pexels.com/photos/3165335/pexels-photo-3165335.jpeg" style={styles.thumbnail} />
                 <View style={styles.info}>
                     <View >
@@ -88,6 +86,7 @@ const TodayCompetitions = () => {
                                 marginTop: 10,
                                 backgroundColor: "#ff5722",
                                 padding: 10,
+                                margin: 5,
                                 borderRadius: 5,
                                 alignItems: "center",
                             }}

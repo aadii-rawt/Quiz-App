@@ -2,13 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from 'react-native';
 import { MaterialIcons, FontAwesome5, Ionicons, Entypo } from '@expo/vector-icons';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import Slider from '../../components/Slider';
-import ActiveQuiz from '../../components/ActiveQuiz';
-import CurrentCompetion from '../../components/CurrentCompetion'
+import Slider from '../components/Slider';
+import ActiveQuiz from '../components/ActiveQuiz';
+import CurrentCompetion from '../components/CurrentCompetion'
 import { Link, useNavigation } from 'expo-router';
-import { useUserAuth } from '../context/useAuthContext';
+import { useUserAuth } from './context/useAuthContext';
 import { doc, getDoc } from 'firebase/firestore';
-import { db } from '../../firebase';
+import { db } from '../firebase';
 
 const Home = () => {
 
