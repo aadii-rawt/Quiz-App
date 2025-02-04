@@ -110,6 +110,7 @@ const TodayCompetitions = () => {
                             marginTop: 10,
                             backgroundColor: "#6200ea",
                             padding: 10,
+                            margin : 5,
                             borderRadius: 5,
                             alignItems: "center",
                         }}
@@ -217,6 +218,7 @@ const styles = StyleSheet.create({
         backgroundColor: "rgb(135, 67, 254)",
         borderRadius: 5,
         padding: 10,
+        margin : 5,
         elevation: "",
     },
     timeLeftText: {

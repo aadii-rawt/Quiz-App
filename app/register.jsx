@@ -116,6 +116,7 @@ const Register = () => {
     } catch (error) {
       console.log("Payment Error", "Something went wrong. Please try again.", error);
     } finally {
+      walletError(false)
       setRegistering(false);
     }
   };
