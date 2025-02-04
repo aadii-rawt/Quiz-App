@@ -1,13 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, TouchableOpacity, ActivityIndicator, FlatList, StyleSheet, Image } from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import { collection, getDocs } from "firebase/firestore";
-import { db } from "../firebase";
+// import { useNavigation } from "@react-navigation/native";
+// import { collection, getDocs } from "firebase/firestore";
+// import { db } from "../firebase";
 import Icon from "react-native-vector-icons/Ionicons";
+import { Link, useNavigation } from 'expo-router';
+import { collection, doc, getDoc, getDocs } from 'firebase/firestore';
+import { db } from '@/firebase';
 import { useUserAuth } from "@/app/context/useAuthContext";
 
 const TodayCompetitions = () => {
     const navigation = useNavigation();
+    // const [competitions, setCompetitions] = useState([])
     const [competitions, setCompetitions] = useState([]);
     const [loading, setLoading] = useState(true);
     const [currentTime, setCurrentTime] = useState(new Date().getTime());
@@ -52,13 +56,14 @@ const TodayCompetitions = () => {
     }, []);
 
     const renderItem = ({ item }) => {
+        if (!item) return null; // P
         const isRegistered = item?.registeredUsers?.some(user => user.userId == userData?.userId);
         const startTime = item.startTime.seconds * 1000;
         const hasStarted = currentTime >= startTime;
 
         return (
             <View style={styles.card}>
-                <Image source="https://images.pexels.com/photos/3165335/pexels-photo-3165335.jpeg" style={styles.thumbnail} />
+                <Image source="https://t3.ftcdn.net/jpg/02/85/90/44/360_F_285904463_52tKiXp592qUhmg24eS3f4k1kGQSji3f.jpg" style={styles.thumbnail} />
                 <View style={styles.info}>
                     <View >
                         <Text style={styles.title}>{item.competitionName}</Text>

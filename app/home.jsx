@@ -29,7 +29,7 @@ const Home = () => {
     // }, [user])
 
     return (
-        <ScrollView style={styles.container}>
+        <View style={styles.container}>
             {/* Header */}
             <View style={styles.header}>
                 <View style={styles.profile}>
@@ -137,7 +137,7 @@ const Home = () => {
                     <Text style={styles.navText}>Profile</Text>
                 </TouchableOpacity>
             </View> */}
-        </ScrollView>
+        </View>
     );
 };
 
