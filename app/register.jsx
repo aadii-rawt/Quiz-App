@@ -2,8 +2,9 @@ import React, { useEffect, useState } from "react";
 import { View, Text, TouchableOpacity, Alert, ActivityIndicator, Image, StyleSheet } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import RazorpayCheckout from "react-native-razorpay";
-import { collection, doc, getDoc } from "firebase/firestore";
+import { collection, doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "../firebase";
+import { useUserAuth } from "./context/useAuthContext";
 
 const Register = () => {
   const navigation = useNavigation();
@@ -11,51 +12,110 @@ const Register = () => {
   const { competitionId } = route?.params;
   const [competition, setCompetition] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [registering, setRegistering] = useState(false); // New state for button loading
+  const [isRegistered, setIsRegistered] = useState(false);
+  // Getting user details (modify as per your auth setup)
+  const { userData } = useUserAuth()
 
-
-  useEffect(() => {;
-    
+  useEffect(() => {
     const fetchCompetitionDetails = async () => {
       try {
         const competitionRef = doc(db, "competitions", competitionId);
         const competitionSnap = await getDoc(competitionRef);
 
         if (competitionSnap.exists()) {
-          console.log("data : ", competitionSnap.data());
-          
-          setCompetition(competitionSnap.data());
+          const competitionData = competitionSnap.data();
+          setCompetition(competitionData);
+
+          // Check if user is already registered in the array
+          if (competitionData?.registeredUsers?.some(user => user.userId === userData?.userId)) {
+            setIsRegistered(true);
+          }
         } else {
           console.log("Error", "Competition not found");
         }
       } catch (error) {
-        console.log("Error", "Failed to fetch competition details");
+        console.log("Error", "Failed to fetch competition details", error);
       } finally {
         setLoading(false);
       }
     };
 
     fetchCompetitionDetails();
-  }, [competitionId]);
+  }, [competitionId, userData?.userId]);
 
-  const handlePayment = () => {
-    const options = {
-      description: "Quiz Registration Fee",
-      currency: "INR",
-      key: "YOUR_RAZORPAY_KEY", // Replace with actual key
-      amount: competition?.fee * 100, // Convert to paise
-      name: "Quiz App",
-      theme: { color: "#6200ea" },
-    };
 
-    RazorpayCheckout.open(options)
-      .then(() => {
-        Alert.alert("Success", "Payment Successful");
-        navigation.navigate("QuizScreen");
-      })
-      .catch((error) => {
-        Alert.alert("Payment Failed", error.description);
-      });
+  const handleRegister = async () => {
+    if (!competition) return;
+    setRegistering(true); // Show loading indicator
+
+    try {
+      const competitionRef = doc(db, "competitions", competitionId);
+      const competitionSnap = await getDoc(competitionRef);
+
+      if (competitionSnap.exists()) {
+        const competitionData = competitionSnap.data();
+        const registeredUsers = competitionData?.registeredUsers || [];
+
+        // Check if user is already registered
+        if (registeredUsers.some((user) => user.userId === userData?.userId)) {
+          setIsRegistered(true);
+          setRegistering(false);
+          console.log("Already Registered", "You are already registered for this competition.");
+          return;
+        }
+
+        // Add user to registeredUsers array
+        const newUser = {
+          userId: userData?.userId,
+          userName: userData.username,
+          phoneNumber: userData.phoneNumber,
+          registeredAt: Date.now(),
+          paymentStatus: "success",
+          score: 0,
+        };
+
+        await updateDoc(competitionRef, {
+          registeredUsers: [...registeredUsers, newUser], // Append user
+        });
+
+        setIsRegistered(true);
+        console.log("Success", "You have successfully registered for the competition!");
+      }
+
+    } catch (error) {
+      console.log("Payment Error", "Something went wrong. Please try again.", error);
+    } finally {
+      setRegistering(false);
+    }
   };
+
+  // useEffect(() => {
+  //   const fetchCompetitionDetails = async () => {
+  //     try {
+  //       const competitionRef = doc(db, "competitions", competitionId);
+  //       const competitionSnap = await getDoc(competitionRef);
+
+  //       if (competitionSnap.exists()) {
+  //         const competitionData = competitionSnap.data();
+  //         setCompetition(competitionData);
+
+  //         // Check if user is already registered in the array
+  //         if (competitionData?.registeredUsers?.some(user => user.userId === userData?.uid)) {
+  //           setIsRegistered(true);
+  //         }
+  //       } else {
+  //         console.log("Error", "Competition not found");
+  //       }
+  //     } catch (error) {
+  //       console.log("Error", "Failed to fetch competition details", error);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+
+  //   fetchCompetitionDetails();
+  // }, [competitionId, userData?.uid]);
 
   if (loading) {
     return <ActivityIndicator size="large" color="#6200ea" style={{ flex: 1, justifyContent: "center" }} />;
@@ -63,36 +123,45 @@ const Register = () => {
 
   return (
     <View style={{ flex: 1, backgroundColor: "#fff", padding: 20 }}>
-      <Image source="https://images.pexels.com/photos/3165335/pexels-photo-3165335.jpeg" style={{
-        width: "100%",
-        height: 180,
-        marginBottom: 5,
-      }} />
+      <Image
+        source={{ uri: "https://images.pexels.com/photos/3165335/pexels-photo-3165335.jpeg" }}
+        style={{ width: "100%", height: 180, marginBottom: 5 }}
+      />
 
       <View style={styles.info}>
-        <View >
+        <View>
           <Text style={styles.title}>{competition?.competitionName}</Text>
           <View style={styles.details}>
             <View style={styles.detailItem}>
-              {/* <Icon name="diamond" size={16} color="#25c50a" /> */}
-              <Text style={styles.detailText}>{competition?.prize}</Text>
+              <Text style={styles.detailText}>Prize: {competition?.prize}</Text>
             </View>
             <View style={styles.detailItem}>
-              {/* <Icon name="time" size={16} color="#7d7d7d" /> */}
-              <Text style={styles.detailText}>{competition?.duration}</Text>
+              <Text style={styles.detailText}>Duration: {competition?.duration}</Text>
             </View>
           </View>
         </View>
-        <View >
-          <Text style={{fontSize: 16, fontWeight: "bold"}}>Entry</Text>
-          <Text style={styles.timeLeftText}>₹10</Text>
-          {/* <Text style={styles.startTimeText}>{competition?.startTime}</Text> */}
+        <View>
+          <Text style={{ fontSize: 16, fontWeight: "bold" }}>Entry</Text>
+          <Text style={styles.timeLeftText}>₹{competition?.entry}</Text>
         </View>
       </View>
+
+      {/* Register Button */}
       <TouchableOpacity
-        onPress={handlePayment}
-        style={{ position: "absolute", bottom: 24, left: 24, right: 24, backgroundColor: "#6200ea", padding: 12, borderRadius: 8 }}>
-        <Text style={{ color: "#fff", textAlign: "center", fontWeight: "bold" }}>Pay & Register</Text>
+        onPress={handleRegister}
+        disabled={isRegistered || registering}
+        style={[
+          styles.registerButton,
+          { backgroundColor: isRegistered ? "#777" : "#6200ea" },
+        ]}
+      >
+        {registering ? (
+          <ActivityIndicator size="small" color="#fff" />
+        ) : (
+          <Text style={{ color: "#fff", textAlign: "center", fontWeight: "bold" }}>
+            {isRegistered ? "Registered" : "Pay & Register"}
+          </Text>
+        )}
       </TouchableOpacity>
     </View>
   );
@@ -100,42 +169,9 @@ const Register = () => {
 
 export default Register;
 
-
 const styles = StyleSheet.create({
-  container: {
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    marginTop: 5,
-  },
-  sliderContainer: {
-    paddingHorizontal: 0,
-    marginBottom: 5,
-    flexDirection: 'column',
-    gap: 15,
-    width: '100%',
-  },
-  card: {
-    width: '100%',
-    backgroundColor: "#fff",
-    borderRadius: 12,
-    marginRight: 10,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    elevation: 0,
-    shadowRadius: 4,
-    border: '1px solid #00000033',
-  },
-  thumbnail: {
-    width: "100%",
-    height: 180,
-    borderTopLeftRadius: 8,
-    borderTopRightRadius: 8,
-    marginBottom: 5,
-  },
   info: {
     width: "100%",
-    display: "flex",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
@@ -145,11 +181,6 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     color: "#000",
-    marginBottom: 5,
-  },
-  author: {
-    fontSize: 14,
-    color: "#777",
     marginBottom: 5,
   },
   details: {
@@ -166,20 +197,17 @@ const styles = StyleSheet.create({
     color: "#777",
     marginLeft: 4,
   },
-  playButton: {
-    width: "94%",
-    backgroundColor: "rgb(135, 67, 254)",
-    borderRadius: 5,
-    padding: 10,
-    elevation: "",
-  },
   timeLeftText: {
     color: "red",
     textAlign: "center",
-    fontWeight: 500,
+    fontWeight: "bold",
   },
-  startTimeText: {
-    color: "#777",
-    textAlign: "center",
+  registerButton: {
+    position: "absolute",
+    bottom: 24,
+    left: 24,
+    right: 24,
+    padding: 12,
+    borderRadius: 8,
   },
 });
