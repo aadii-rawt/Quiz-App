@@ -5,28 +5,9 @@ import { Link, useNavigation } from 'expo-router';
 import { collection, doc, getDoc, getDocs } from 'firebase/firestore';
 import { db } from '@/firebase';
 
-const data = [
-    {
-        id: "1",
-        title: "Beginner Math Quiz",
-        // author: "Mahmud Saimon",
-        points: "500",
-        time: "5min",
-        image: "https://images.pexels.com/photos/3165335/pexels-photo-3165335.jpeg",
-    },
-    {
-        id: "2",
-        title: "Intermediate Math Quiz",
-        // author: "Mahmud Saimon",
-        points: "700",
-        time: "10min",
-        image: "https://images.pexels.com/photos/3165335/pexels-photo-3165335.jpeg",
-    },
-];
-
 const CurrentCompetion = ({ user }) => {
     const navigation = useNavigation();
-    const [competitions, setCompetitions] = useState(null)
+    const [competitions, setCompetitions] = useState([])
 
     useEffect(() => {
         const fetchCompetitions = async () => {
@@ -101,6 +82,9 @@ const CurrentCompetion = ({ user }) => {
     };
 
     const renderItem = ({ item }) => {
+
+        if (!item) return null; // Prevent crashes
+        
         const startTime = new Date(item?.startTime.seconds * 1000);
         const now = new Date();
         const isRegistered = item?.registeredUsers?.some(u => u.uid === user?.uid);
@@ -114,7 +98,7 @@ const CurrentCompetion = ({ user }) => {
 
         return (
             <View style={styles.card}>
-                <Image source="https://images.pexels.com/photos/3165335/pexels-photo-3165335.jpeg" style={styles.thumbnail} />
+                <Image source="https://t3.ftcdn.net/jpg/02/85/90/44/360_F_285904463_52tKiXp592qUhmg24eS3f4k1kGQSji3f.jpg" style={styles.thumbnail} />
                 <View style={styles.info}>
                     <View >
                         <Text style={styles.title}>{item.competitionName}</Text>
@@ -135,7 +119,7 @@ const CurrentCompetion = ({ user }) => {
                     </View>
                 </View>
                 <View style={{ margin: 10, width: "100%" }}>
-                    <TouchableOpacity style={styles.playButton}
+                    <TouchableOpacity style={{ width: '95%', color: 'black', backgroundColor: 'rgb(135, 67, 254)', borderRadius: 5, padding:10, elevation: 4}}
                         onPress={()=>fetchComptetionInfo(item?.competitionId)}
                     >
                         <Text style={{ color: 'white', fontWeight: 500, textAlign: "center" }}>Regiseter Now</Text>
@@ -157,17 +141,23 @@ const CurrentCompetion = ({ user }) => {
         )
     };
 
+    console.log("Final Competitions State:", competitions);
+
     return (
         <View style={styles.container}>
             <Text style={{ fontSize: 16, fontWeight: 'bold', marginBottom: 10 }}>Current Competitions</Text>
-            <FlatList
-                data={competitions}
-                renderItem={renderItem}
-                keyExtractor={(item) => item.id}
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={styles.sliderContainer}
-            />
+            {competitions.length > 0 ? (
+                <FlatList
+                    data={competitions}
+                    renderItem={renderItem}
+                    keyExtractor={(item) => item.id?.toString() || Math.random().toString()}
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    contentContainerStyle={styles.sliderContainer}
+                />
+            ) : (
+                <Text>No competitions available today.</Text> 
+            )}
         </View>
     );
 };
