@@ -51,7 +51,6 @@ const Register = () => {
     setRegistering(true); // Show loading indicator
 
     try {
-
       const userRef = doc(db, "users", userData?.userId);
       const userSnap = await getDoc(userRef);
 
@@ -61,18 +60,18 @@ const Register = () => {
         return;
       }
 
-      const userWalletBalance = userSnap.data()?.wallet || 0; // Get user's wallet balance
-      const registrationFee = competition?.entry || 0; // Assuming entryFee is stored in the competition data
+      const userDataFromDB = userSnap.data();
+      const userWalletBalance = userDataFromDB?.wallet || 0; // Get user's wallet balance
+      const playedCompetitions = userDataFromDB?.playedCompetitions || []; // Get played competitions
+      const registrationFee = competition?.entry || 0; // Get entry fee
 
       // Check if the user has enough balance
       if (userWalletBalance < registrationFee) {
         console.log("Insufficient Balance", "You do not have enough balance to register.");
-        setWalletError(true)
+        setWalletError(true);
         setRegistering(false);
         return;
       }
-
-
 
       const competitionRef = doc(db, "competitions", competitionId);
       const competitionSnap = await getDoc(competitionRef);
@@ -89,13 +88,13 @@ const Register = () => {
           return;
         }
 
-        // Deduct the registration fee from user's wallet
+        // Deduct the registration fee from user's wallet and update playedCompetitions array
         await updateDoc(userRef, {
           wallet: userWalletBalance - registrationFee,
+          playedCompetitions: [...playedCompetitions, competitionId], // Add competition ID
         });
 
-
-        // Add user to registeredUsers array
+        // Add user to registeredUsers array in the competition document
         const newUser = {
           userId: userData?.userId,
           userName: userData.username,
@@ -116,10 +115,11 @@ const Register = () => {
     } catch (error) {
       console.log("Payment Error", "Something went wrong. Please try again.", error);
     } finally {
-      walletError(false)
+      setWalletError(false);
       setRegistering(false);
     }
   };
+
 
   // useEffect(() => {
   //   const fetchCompetitionDetails = async () => {
@@ -188,7 +188,7 @@ const Register = () => {
           disabled={isRegistered || registering}
           style={[
             styles.registerButton,
-            { backgroundColor: isRegistered ? "#777" : walletError ?  "#F77E7E" : "#6200ea" },
+            { backgroundColor: isRegistered ? "#777" : walletError ? "#F77E7E" : "#6200ea" },
           ]}
         >
           {registering ? (
@@ -239,7 +239,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontWeight: "bold",
   },
-  register : {
+  register: {
     position: "absolute",
     bottom: 24,
     left: 24,

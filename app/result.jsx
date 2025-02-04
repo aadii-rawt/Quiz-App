@@ -8,7 +8,7 @@ import { useRoute } from "@react-navigation/native";
 const Result = () => {
 
   const route = useRoute();
-  const { competitionId } = route.params; // Extract competitionId
+  const { competitionId, score } = route.params; // Extract competitionId
 
   const [loading, setLoading] = useState(true);
   const [isTimeOver, setIsTimeOver] = useState(false);
@@ -113,9 +113,9 @@ const Result = () => {
         />
       </View>
       <Text style={styles.congratsText}>Quiz Completed!</Text>
-      <Text style={styles.earningsText}>Your Score: {yourScore}</Text>
+      <Text style={styles.earningsText}>Your Score: {score}</Text>
 
-      <Text style={styles.rankTitle}>Leaderboard:</Text>
+      {/* <Text style={styles.rankTitle}>Leaderboard:</Text>
       {players.map((player) => (
         <Text key={player.uid} style={styles.rankText}>
           <Text style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
@@ -127,14 +127,14 @@ const Result = () => {
           </Text>
           {player.score} points
         </Text>
-      ))}
+      ))} */}
 
-      <TouchableOpacity style={styles.playAgainButton}>
+      {/* <TouchableOpacity style={styles.playAgainButton}>
         <Text style={styles.playAgainText}>Play Again</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
       <TouchableOpacity>
         <Text style={styles.goLobbyText}>
-          <Link href="">Go Lobby</Link>
+          <Link href="">Go Home</Link>
         </Text>
       </TouchableOpacity>
     </View>
