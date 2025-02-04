@@ -57,6 +57,7 @@ const Play = () => {
                             // navigation.navigate('play', { competitionId });
                             console.log("Current User's Player Data not found in the players array.");
                         }
+
                     } else {
                         console.log("No players found in competition data.");
                     }
@@ -131,7 +132,7 @@ const Play = () => {
             setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
             setTimeLeft(10); // Reset timer for next question
         } else {
-            navigation.navigate("result", {competitionId})
+            navigation.navigate("result", {competitionId,score})
         }
     };
 

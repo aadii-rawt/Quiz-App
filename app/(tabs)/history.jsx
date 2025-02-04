@@ -1,23 +1,60 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, FlatList, ActivityIndicator, StyleSheet } from "react-native";
+import { doc, getDoc, getDocs, collection, query, where } from "firebase/firestore";
+import { useUserAuth } from "../context/useAuthContext";
+import { db } from "../../firebase";
 
-export default function History() {
+export default function history() {
+  const { userData } = useUserAuth(); // Get the current user
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Fake data for now
-    setLoading(true);
-    setTimeout(() => {
-      const fakeHistory = [
-        { id: "1", title: "Math Quiz", score: 85, date: "2024-02-01T10:00:00.000Z" },
-        { id: "2", title: "Science Quiz", score: 40, date: "2024-02-02T14:30:00.000Z" },
-        { id: "3", title: "History Quiz", score: 72, date: "2024-02-03T16:45:00.000Z" },
-      ];
-      setHistory(fakeHistory);
-      setLoading(false);
-    }, 1500);
-  }, []);
+    const fetchHistory = async () => {
+      if (!userData) return;
+      setLoading(true);
+
+      try {
+        // Get user document
+        const userRef = doc(db, "users", userData?.userId);
+        const userSnap = await getDoc(userRef);
+
+        if (!userSnap.exists()) {
+          console.log("User not found");
+          setLoading(false);
+          return;
+        }
+
+        const playedCompetitions = userSnap.data()?.playedCompetitions || [];
+        console.log("played :", playedCompetitions);
+
+        if (playedCompetitions.length === 0) {
+          setHistory([]);
+          setLoading(false);
+          return;
+        }
+        // Fetch competition details
+        const competitionsRef = collection(db, "competitions");
+        const competitionsQuery = query(competitionsRef, where("competitionId", "in", playedCompetitions));
+        const competitionsSnap = await getDocs(competitionsQuery);
+
+        const competitionsData = competitionsSnap.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+
+        console.log(competitionsData);
+
+        setHistory(competitionsData);
+      } catch (error) {
+        console.log("Error fetching history:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchHistory();
+  }, [userData]);
 
   if (loading) return <ActivityIndicator size="large" color="#FF6B00" style={{ marginTop: 20 }} />;
 
@@ -44,10 +81,10 @@ function HistoryItem({ quiz }) {
         <Text style={{ fontSize: 22, color: quiz.score > 50 ? "#28a745" : "#dc3545" }}>🏆</Text>
       </View>
       <View style={styles.textContainer}>
-        <Text style={styles.quizTitle}>{quiz.title}</Text>
-        <Text style={styles.quizDate}>{new Date(quiz.date).toLocaleString()}</Text>
+        <Text style={styles.quizTitle}>{quiz?.competitionName}</Text>
+        <Text style={styles.quizDate}>{new Date(quiz?.startTime).toLocaleString()}</Text>
         <Text style={[styles.quizScore, { color: quiz.score > 50 ? "#28a745" : "#dc3545" }]}>
-          Score: {quiz.score}
+          Score: {quiz.score || "N/A"}
         </Text>
       </View>
     </View>
@@ -81,7 +118,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     shadowOffset: { width: 0, height: 2 },
-    elevation: 3, // Shadow for Android
+    elevation: 3,
   },
   icon: {
     width: 40,
@@ -106,4 +143,3 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
 });
-
