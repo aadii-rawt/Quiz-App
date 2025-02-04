@@ -26,22 +26,22 @@ const TodayCompetitions = () => {
             try {
                 const competitionsRef = collection(db, "competitions");
                 const querySnapshot = await getDocs(competitionsRef);
-    
+
                 let todayCompetitions = [];
                 const now = new Date();
                 const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime(); // Midnight today
                 const tomorrowStart = todayStart + 86400000; // Midnight next day
-    
+
                 querySnapshot.forEach((doc) => {
                     const competition = { id: doc.id, ...doc.data() };
                     const startTime = competition.startTime.seconds * 1000; // Convert Firestore timestamp to milliseconds
-    
+
                     // Only show competitions that start today (between today's midnight and tomorrow's midnight)
                     if (startTime >= todayStart && startTime < tomorrowStart) {
                         todayCompetitions.push(competition);
                     }
                 });
-    
+
                 // Sort competitions by start time
                 todayCompetitions.sort((a, b) => a.startTime.seconds - b.startTime.seconds);
                 setCompetitions(todayCompetitions);
@@ -51,10 +51,10 @@ const TodayCompetitions = () => {
                 setLoading(false);
             }
         };
-    
+
         fetchCompetitions();
     }, []);
-    
+
     const renderItem = ({ item }) => {
         if (!item) return null; // P
         const isRegistered = item?.registeredUsers?.some(user => user.userId == userData?.userId);
@@ -110,6 +110,7 @@ const TodayCompetitions = () => {
                             marginTop: 10,
                             backgroundColor: "#6200ea",
                             padding: 10,
+                            margin : 5,
                             borderRadius: 5,
                             alignItems: "center",
                         }}
@@ -217,6 +218,7 @@ const styles = StyleSheet.create({
         backgroundColor: "rgb(135, 67, 254)",
         borderRadius: 5,
         padding: 10,
+        margin : 5,
         elevation: "",
     },
     timeLeftText: {

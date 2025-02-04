@@ -16,6 +16,7 @@ const Register = () => {
   const [isRegistered, setIsRegistered] = useState(false);
   // Getting user details (modify as per your auth setup)
   const { userData } = useUserAuth()
+  const [walletError, setWalletError] = useState(false)
 
   useEffect(() => {
     const fetchCompetitionDetails = async () => {
@@ -50,6 +51,29 @@ const Register = () => {
     setRegistering(true); // Show loading indicator
 
     try {
+
+      const userRef = doc(db, "users", userData?.userId);
+      const userSnap = await getDoc(userRef);
+
+      if (!userSnap.exists()) {
+        console.log("User not found");
+        setRegistering(false);
+        return;
+      }
+
+      const userWalletBalance = userSnap.data()?.wallet || 0; // Get user's wallet balance
+      const registrationFee = competition?.entry || 0; // Assuming entryFee is stored in the competition data
+
+      // Check if the user has enough balance
+      if (userWalletBalance < registrationFee) {
+        console.log("Insufficient Balance", "You do not have enough balance to register.");
+        setWalletError(true)
+        setRegistering(false);
+        return;
+      }
+
+
+
       const competitionRef = doc(db, "competitions", competitionId);
       const competitionSnap = await getDoc(competitionRef);
 
@@ -64,6 +88,12 @@ const Register = () => {
           console.log("Already Registered", "You are already registered for this competition.");
           return;
         }
+
+        // Deduct the registration fee from user's wallet
+        await updateDoc(userRef, {
+          wallet: userWalletBalance - registrationFee,
+        });
+
 
         // Add user to registeredUsers array
         const newUser = {
@@ -86,6 +116,7 @@ const Register = () => {
     } catch (error) {
       console.log("Payment Error", "Something went wrong. Please try again.", error);
     } finally {
+      walletError(false)
       setRegistering(false);
     }
   };
@@ -147,22 +178,28 @@ const Register = () => {
       </View>
 
       {/* Register Button */}
-      <TouchableOpacity
-        onPress={handleRegister}
-        disabled={isRegistered || registering}
-        style={[
-          styles.registerButton,
-          { backgroundColor: isRegistered ? "#777" : "#6200ea" },
-        ]}
-      >
-        {registering ? (
-          <ActivityIndicator size="small" color="#fff" />
-        ) : (
-          <Text style={{ color: "#fff", textAlign: "center", fontWeight: "bold" }}>
-            {isRegistered ? "Registered" : "Pay & Register"}
-          </Text>
-        )}
-      </TouchableOpacity>
+
+      <View style={styles.register}>
+        {walletError && <Text style={{ color: "red", textAlign: "left", padding: 10 }}>
+          Insufficient Balance
+        </Text>}
+        <TouchableOpacity
+          onPress={handleRegister}
+          disabled={isRegistered || registering}
+          style={[
+            styles.registerButton,
+            { backgroundColor: isRegistered ? "#777" : walletError ?  "#F77E7E" : "#6200ea" },
+          ]}
+        >
+          {registering ? (
+            <ActivityIndicator size="small" color="#fff" />
+          ) : (
+            <Text style={{ color: "#fff", textAlign: "center", fontWeight: "bold" }}>
+              {isRegistered ? "Registered" : "Pay & Register"}
+            </Text>
+          )}
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -202,11 +239,13 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontWeight: "bold",
   },
-  registerButton: {
+  register : {
     position: "absolute",
     bottom: 24,
     left: 24,
     right: 24,
+  },
+  registerButton: {
     padding: 12,
     borderRadius: 8,
   },
