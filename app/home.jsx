@@ -32,11 +32,14 @@ const Home = () => {
         <View style={styles.container}>
             {/* Header */}
             <View style={styles.header}>
-                <View style={styles.profile}>
-                    <Image
-                        source={{ uri: 'https://imgcdn.stablediffusionweb.com/2024/9/8/9bc3b58a-aca9-4f88-9ecc-6ea2217f7790.jpg' }} // Replace with profile image URI
-                        style={styles.profileImage}
-                    />
+                <View style={styles.profile}
+                >
+                    <Link href='/login'>
+                        <Image
+                            source={{ uri: 'https://imgcdn.stablediffusionweb.com/2024/9/8/9bc3b58a-aca9-4f88-9ecc-6ea2217f7790.jpg' }} // Replace with profile image URI
+                            style={styles.profileImage}
+                        />
+                    </Link>
                     <View style={{ display: 'flex', gap: '5px', flexDirection: 'row', alignItems: 'center' }}>
                         <Text style={styles.greeting}>Hello!</Text>
                         <Text style={styles.userName}>{userData?.username}</Text>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { Link } from 'expo-router';
@@ -6,12 +6,16 @@ import { RecaptchaVerifier, signInWithPhoneNumber } from 'firebase/auth';
 import { auth, db } from '../firebase';
 import OtpVerification from './otpVerification';
 import { collection, getDocs, query, where } from 'firebase/firestore';
+import { FirebaseRecaptchaVerifierModal } from "expo-firebase-recaptcha";
+import {firebaseConfig} from '../firebase';
 
 const Login = () => {
 
   const [phoneNumber, setPhoneNumber] = useState("")
   const [confirmation, setConfirmation] = useState(null);
   const [error, setError] = useState("")
+
+  const recaptchaVerifier = useRef(null); // Use `useRef` for the reCAPTCHA modal
 
   // const handleLogin = async () => {
   //   try {
@@ -31,6 +35,32 @@ const Login = () => {
   //   }
   // }
 
+  // Login for Mobile App
+  // const handleLogin = async () => {
+  //   try {
+  //     const usersRef = collection(db, "users");
+  //     const q = query(usersRef, where("phoneNumber", "==", phoneNumber));
+  //     const querySnapshot = await getDocs(q);
+
+  //     if (querySnapshot.empty) {
+  //       setError("User not found");
+  //       return;
+  //     }
+
+  //     if (!recaptchaVerifier.current) {
+  //       console.error("Recaptcha verifier is not initialized");
+  //       return;
+  //     }
+
+  //     const confirmationResult = await signInWithPhoneNumber(auth, phoneNumber, recaptchaVerifier.current);
+  //     setConfirmation(confirmationResult);
+  //     console.log(confirmationResult);
+  //   } catch (error) {
+  //     console.error("Login Error:", error);
+  //   }
+  // };
+
+  // Login For Web
   const handleLogin = async () => {
     try {
       // Step 1: Check if phone number exists in Firestore
@@ -58,6 +88,7 @@ const Login = () => {
       console.log(error);
     }
   };
+
 
 
   return (
@@ -103,6 +134,18 @@ const Login = () => {
           </View> */}
         </> :
         <OtpVerification confirmation={confirmation} phoneNumber={phoneNumber} type='login' />}
+        
+      {/* <FirebaseRecaptchaVerifierModal
+        ref={recaptchaVerifier}
+        firebaseConfig={{
+          apiKey: "AIzaSyCJe_Pli3afXd1ddVctWbn7tu251_FaMNk",
+          authDomain: "quizapp-fcfb5.firebaseapp.com",
+          projectId: "quizapp-fcfb5",
+          storageBucket: "quizapp-fcfb5.firebasestorage.app",
+          messagingSenderId: "180141145950",
+          appId: "1:180141145950:web:5e6de496aeb0b3a3fad9cf"
+        }}
+      /> */}
     </View>
   );
 };
