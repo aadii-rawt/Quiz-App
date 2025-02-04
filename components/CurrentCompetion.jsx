@@ -1,100 +1,65 @@
-import { StyleSheet, Text, View, FlatList, TouchableOpacity, Image } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
+import { View, Text, TouchableOpacity, ActivityIndicator, FlatList, StyleSheet, Image } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "../firebase";
 import Icon from "react-native-vector-icons/Ionicons";
 import { Link, useNavigation } from 'expo-router';
 import { collection, doc, getDoc, getDocs } from 'firebase/firestore';
 import { db } from '@/firebase';
+import { useUserAuth } from "@/app/context/useAuthContext";
 
-const CurrentCompetion = ({ user }) => {
+const TodayCompetitions = () => {
     const navigation = useNavigation();
-    const [competitions, setCompetitions] = useState([])
+    // const [competitions, setCompetitions] = useState([])
+    const [competitions, setCompetitions] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [currentTime, setCurrentTime] = useState(new Date().getTime());
 
+    const { userData } = useUserAuth()
+    const formatTime = (timestamp) => {
+        const date = new Date(timestamp.seconds * 1000);
+        return date.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true });
+    };
     useEffect(() => {
         const fetchCompetitions = async () => {
             try {
-                const competitionsRef = collection(db, 'competitions');
-                const snapshot = await getDocs(competitionsRef);
-                const allCompetitions = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-
-                // Get today's date at midnight
-                const today = new Date();
-                today.setHours(0, 0, 0, 0);
-
-                // Filter competitions starting today
-                const filteredCompetitions = allCompetitions.filter(competition => {
-                    if (!competition.startTime?.seconds) return false; // Ensure startTime exists
-
-                    const startTime = new Date(competition.startTime.seconds * 1000); // Convert Firebase Timestamp to Date
-                    startTime.setHours(0, 0, 0, 0); // Normalize to midnight
-
-                    return startTime.getTime() === today.getTime(); // Check if start date is today
+                const competitionsRef = collection(db, "competitions");
+                const querySnapshot = await getDocs(competitionsRef);
+    
+                let todayCompetitions = [];
+                const now = new Date();
+                const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime(); // Midnight today
+                const tomorrowStart = todayStart + 86400000; // Midnight next day
+    
+                querySnapshot.forEach((doc) => {
+                    const competition = { id: doc.id, ...doc.data() };
+                    const startTime = competition.startTime.seconds * 1000; // Convert Firestore timestamp to milliseconds
+    
+                    // Only show competitions that start today (between today's midnight and tomorrow's midnight)
+                    if (startTime >= todayStart && startTime < tomorrowStart) {
+                        todayCompetitions.push(competition);
+                    }
                 });
-
-                setCompetitions(filteredCompetitions);
-                console.log('comp',competitions);
-                
+    
+                // Sort competitions by start time
+                todayCompetitions.sort((a, b) => a.startTime.seconds - b.startTime.seconds);
+                setCompetitions(todayCompetitions);
             } catch (error) {
-                console.error("Error fetching competitions: ", error);
+                console.log("Error fetching competitions:", error);
+            } finally {
+                setLoading(false);
             }
         };
-
+    
         fetchCompetitions();
     }, []);
-
-    const fetchComptetionInfo = async (competitionId) => {
-        console.log(competitionId);
-
-        try {
-            const userDocRef = doc(db, `competitions/${competitionId}`);
-            const userSnapshot = await getDoc(userDocRef);
-
-            if (userSnapshot.exists()) {
-                const userData = userSnapshot.data();
-
-                console.log(userData);
-                
-
-                if (userData?.questions) {
-                    // Find the player whose UID matches the current user's UID
-                    const currentPlayer = userData?.players?.find(player => player.uid === user?.uid);
-                    
-                    if (currentPlayer) {
-                        console.log("Current User's Player Data:", currentPlayer);
-                        alert('You have already played this quiz');
-                        return;
-                    } else {
-                        navigation.navigate('play', {competitionId});
-                        console.log("Current User's Player Data not found in the players array.");
-                    }
-                } else {
-                    console.log("No players found in competition data.");
-                }
-            } else {
-                console.log("Competition document does not exist.");
-            }
-        } catch (error) {
-            console.error("Error fetching competition info:", error);
-        }
-    };
-
-    const handleNavigateToRegister = () => {
-        navigation.navigate('register', { competitionId : "jhdkjfhskdjfh" });
-    };
-
+    
     const renderItem = ({ item }) => {
-
-        if (!item) return null; // Prevent crashes
-        
-        const startTime = new Date(item?.startTime.seconds * 1000);
-        const now = new Date();
-        const isRegistered = item?.registeredUsers?.some(u => u.uid === user?.uid);
-        const canPlay = now >= startTime;
-        const formatTime = (timestamp) => {
-            const date = new Date(timestamp.seconds * 1000);
-            return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
-        };
-        
-
+        if (!item) return null; // P
+        const isRegistered = item?.registeredUsers?.some(user => user.userId == userData?.userId);
+        const startTime = item.startTime.seconds * 1000;
+        const hasStarted = currentTime >= startTime;
 
         return (
             <View style={styles.card}>
@@ -118,51 +83,69 @@ const CurrentCompetion = ({ user }) => {
                         <Text style={styles.startTimeText}>{formatTime(item.startTime)}</Text>
                     </View>
                 </View>
-                <View style={{ margin: 10, width: "100%" }}>
-                    <TouchableOpacity style={{ width: '95%', color: 'black', backgroundColor: 'rgb(135, 67, 254)', borderRadius: 5, padding:10, elevation: 4}}
-                        onPress={()=>fetchComptetionInfo(item?.competitionId)}
-                    >
-                        <Text style={{ color: 'white', fontWeight: 500, textAlign: "center" }}>Regiseter Now</Text>
-                    </TouchableOpacity>
 
-                    {/* {canPlay ? (
-                        <TouchableOpacity style={styles.playButton} onPress={() => navigation.navigate('PlayScreen', { competitionId: item.id })}>
-                            <Text style={{ color: 'white', fontWeight: 500, textAlign: "center" }}>Play</Text>
-                        </TouchableOpacity>
-                    ) : !isRegistered ? (
-                        <TouchableOpacity style={styles.playButton} onPress={() => handleRegister(item.id)}>
-                            <Text style={{ color: 'white', fontWeight: 500, textAlign: "center" }}>Register Now</Text>
+                {isRegistered ? (
+                    hasStarted ? (
+                        <TouchableOpacity
+                            style={{
+                                marginTop: 10,
+                                backgroundColor: "#ff5722",
+                                padding: 10,
+                                margin: 5,
+                                borderRadius: 5,
+                                alignItems: "center",
+                            }}
+                            onPress={() => navigation.navigate("play", { competitionId: item.id })}
+                        >
+                            <Text style={{ color: "#fff", fontWeight: "bold" }}>Play</Text>
                         </TouchableOpacity>
                     ) : (
-                        <Text sstyle={{ color: 'white', fontWeight: 500, textAlign: "center" }}>Registered</Text>
-                    )} */}
-                </View>
-            </View >
-        )
+                        <Text style={{ color: "green", fontWeight: "bold", marginTop: 10 }}>
+                            ✅ Registered - Wait for game to start
+                        </Text>
+                    )
+                ) : (
+                    <TouchableOpacity
+                        style={{
+                            marginTop: 10,
+                            backgroundColor: "#6200ea",
+                            padding: 10,
+                            borderRadius: 5,
+                            alignItems: "center",
+                        }}
+                        onPress={() => navigation.navigate("register", { competitionId: item.id })}
+                    >
+                        <Text style={{ color: "#fff", fontWeight: "bold" }}>Register</Text>
+                    </TouchableOpacity>
+                )}
+            </View>
+        );
     };
 
-    console.log("Final Competitions State:", competitions);
+
+
+    if (loading) {
+        return <ActivityIndicator size="large" color="#6200ea" style={{ flex: 1, justifyContent: "center" }} />;
+    }
 
     return (
-        <View style={styles.container}>
-            <Text style={{ fontSize: 16, fontWeight: 'bold', marginBottom: 10 }}>Current Competitions</Text>
+        <View style={{ flex: 1, backgroundColor: "#f4f4f4", padding: 15 }}>
+
             {competitions.length > 0 ? (
                 <FlatList
                     data={competitions}
+                    keyExtractor={(item) => item.id}
                     renderItem={renderItem}
-                    keyExtractor={(item) => item.id?.toString() || Math.random().toString()}
-                    horizontal
-                    showsHorizontalScrollIndicator={false}
-                    contentContainerStyle={styles.sliderContainer}
                 />
             ) : (
-                <Text>No competitions available today.</Text> 
+                <Text style={{ textAlign: "center", fontSize: 16, color: "#777" }}>No competitions available today.</Text>
             )}
         </View>
     );
 };
 
-export default CurrentCompetion;
+export default TodayCompetitions;
+
 
 const styles = StyleSheet.create({
     container: {

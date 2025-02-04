@@ -5,11 +5,15 @@ import { getFirestore, doc, getDoc, setDoc, updateDoc } from 'firebase/firestore
 // import RazorpayCheckout from 'react-native-razorpay';
 import { auth, db } from '../firebase';
 import { useNavigation } from 'expo-router';
+import {useUserAuth} from "./context/useAuthContext";
 
 
 const Wallet = () => {
   const [balance, setBalance] = useState(0);
+  const {userData} = useUserAuth()
   const navigation = useNavigation()
+  console.log(userData);
+  
   //   useEffect(() => {
   //     const fetchBalance = async () => {
   //       if (auth.currentUser) {
@@ -27,7 +31,7 @@ const Wallet = () => {
 
   return (
     <View style={{ padding: 20 }}>
-      <Text style={{ fontSize: 24, fontWeight: 'bold' }}>Wallet Balance: ₹{balance}</Text>
+      <Text style={{ fontSize: 24, fontWeight: 'bold' }}>Wallet Balance: ₹{userData?.wallet}</Text>
       <Button title="Add Money" onPress={() => navigation.navigate('addMoney')} />
     </View>
   );

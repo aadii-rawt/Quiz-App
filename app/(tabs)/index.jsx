@@ -1,7 +1,6 @@
 import { StyleSheet, Text, View, ScrollView } from 'react-native'
 import React from 'react'
-import Home from './home'
-
+import Home from "../home";
 const index = () => {
   return (
     <ScrollView>

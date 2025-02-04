@@ -4,7 +4,6 @@ import { Stack, useNavigation } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
-// import 'react-native-reanimated';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import {UserContextProvider} from '@/app/context/useAuthContext'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
@@ -38,7 +37,7 @@ export default function RootLayout() {
         <Stack.Screen name='login' options={{headerShown : false}} />
         <Stack.Screen name='index' options={{headerShown : false}} />
         <Stack.Screen name='signup' options={{headerShown : false}} />
-        <Stack.Screen name='home' options={{headerShown : false}} />
+        {/* <Stack.Screen name='home' options={{headerShown : false}} /> */}
         <Stack.Screen name='play' options={{headerShown : false}} />
         <Stack.Screen name='result' options={{headerShown : false}} />
         <Stack.Screen name='otpVerification' options={{headerShown : false}} />
@@ -50,6 +49,21 @@ export default function RootLayout() {
               color="black"
               style={{ marginLeft: 16 }}
               // onPress={() => navigation.goBack()}
+            />
+          ),
+          headerTitleStyle: {
+            fontSize: 20,
+            fontWeight: "bold",
+          },
+        }} />
+        <Stack.Screen name='register' options={{headerShown : true,title : "Register",
+           headerLeft: () => (
+            <MaterialIcons
+              name="arrow-back"
+              size={24}
+              color="black"
+              style={{ marginLeft: 16 }}
+              onPress={() => navigation.goBack()}
             />
           ),
           headerTitleStyle: {
