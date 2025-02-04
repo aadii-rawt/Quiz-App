@@ -63,7 +63,7 @@ export default function RootLayout() {
               size={24}
               color="black"
               style={{ marginLeft: 16 }}
-              onPress={() => navigation.goBack()}
+              // onPress={() => navigation.goBack()}
             />
           ),
           headerTitleStyle: {
