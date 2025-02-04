@@ -4,7 +4,7 @@ import { doc, getDoc, getDocs, collection, query, where } from "firebase/firesto
 import { useUserAuth } from "../context/useAuthContext";
 import { db } from "../../firebase";
 
-export default function history() {
+export default function History() {
   const { userData } = useUserAuth(); // Get the current user
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -26,24 +26,32 @@ export default function history() {
         }
 
         const playedCompetitions = userSnap.data()?.playedCompetitions || [];
-        console.log("played :", playedCompetitions);
+        console.log("Played Competitions:", playedCompetitions);
 
         if (playedCompetitions.length === 0) {
           setHistory([]);
           setLoading(false);
           return;
         }
+
         // Fetch competition details
         const competitionsRef = collection(db, "competitions");
         const competitionsQuery = query(competitionsRef, where("competitionId", "in", playedCompetitions));
         const competitionsSnap = await getDocs(competitionsQuery);
 
-        const competitionsData = competitionsSnap.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
+        const competitionsData = competitionsSnap.docs.map((doc) => {
+          const competition = doc.data();
+          // Find user's score from registeredUsers
+          const userEntry = competition.registeredUsers?.find((user) => user.userId === userData?.userId);
+          return {
+            id: doc.id,
+            competitionName: competition.competitionName,
+            startTime: competition.startTime,
+            score: userEntry?.score ?? "N/A", // Get user's score, default to "N/A" if not found
+          };
+        });
 
-        console.log(competitionsData);
+        console.log("Competitions Data:", competitionsData);
 
         setHistory(competitionsData);
       } catch (error) {
@@ -81,10 +89,10 @@ function HistoryItem({ quiz }) {
         <Text style={{ fontSize: 22, color: quiz.score > 50 ? "#28a745" : "#dc3545" }}>🏆</Text>
       </View>
       <View style={styles.textContainer}>
-        <Text style={styles.quizTitle}>{quiz?.competitionName}</Text>
-        <Text style={styles.quizDate}>{new Date(quiz?.startTime).toLocaleString()}</Text>
+        <Text style={styles.quizTitle}>{quiz.competitionName}</Text>
+        <Text style={styles.quizDate}>{new Date(quiz.startTime).toLocaleString()}</Text>
         <Text style={[styles.quizScore, { color: quiz.score > 50 ? "#28a745" : "#dc3545" }]}>
-          Score: {quiz.score || "N/A"}
+          Score: {quiz.score}
         </Text>
       </View>
     </View>

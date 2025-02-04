@@ -53,7 +53,7 @@ const TodayCompetitions = () => {
         };
 
         fetchCompetitions();
-    }, []);
+    });
 
     const renderItem = ({ item }) => {
         if (!item) return null; // P
