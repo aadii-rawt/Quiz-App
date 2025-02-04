@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, TouchableOpacity, ActivityIndicator, FlatList, StyleSheet, Image } from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import { collection, getDocs } from "firebase/firestore";
-import { db } from "../firebase";
+// import { useNavigation } from "@react-navigation/native";
+// import { collection, getDocs } from "firebase/firestore";
+// import { db } from "../firebase";
 import Icon from "react-native-vector-icons/Ionicons";
 import { Link, useNavigation } from 'expo-router';
 import { collection, doc, getDoc, getDocs } from 'firebase/firestore';
