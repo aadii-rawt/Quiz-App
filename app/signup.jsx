@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { Link, useNavigation } from 'expo-router';
@@ -6,6 +6,7 @@ import { auth, db } from '../firebase';
 import { RecaptchaVerifier, signInWithPhoneNumber } from 'firebase/auth';
 import OtpVerification from './otpVerification';
 import { collection, getDocs, query, where } from 'firebase/firestore';
+import { FirebaseRecaptchaVerifierModal } from 'expo-firebase-recaptcha';
 
 const Signup = () => {
   const [username, setUsername] = useState("");
@@ -14,6 +15,9 @@ const Signup = () => {
   const [error, setError] = useState("")
 
   const navigation = useNavigation()
+  const recaptchaVerifier = useRef(null); // Use `useRef` for the reCAPTCHA modal
+  
+  // Signup for Web
   const handleSignup = async () => {
     // try {
     //   const recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
@@ -59,6 +63,23 @@ const Signup = () => {
       console.log(error);
     }
   }
+
+  //Signup for Mobile App
+  // const handleSignup = async () => {
+  //   try {
+  //     if (!recaptchaVerifier.current) {
+  //       console.error("Recaptcha verifier is not initialized");
+  //       return;
+  //     }
+
+  //     const confirmationResult = await signInWithPhoneNumber(auth, phoneNumber, recaptchaVerifier.current);
+  //     setConfirmation(confirmationResult);
+  //     console.log("OTP sent!", confirmationResult);
+  //   } catch (error) {
+  //     console.error("Signup Error:", error);
+  //     setError(error.message);
+  //   }
+  // };
 
   return (
     <View style={styles.container}>
@@ -107,6 +128,19 @@ const Signup = () => {
           </View>
         </>) :
         <OtpVerification confirmation={confirmation} username={username} phoneNumber={phoneNumber} />}
+
+      <FirebaseRecaptchaVerifierModal
+        ref={recaptchaVerifier}
+        firebaseConfig={{
+          apiKey: "AIzaSyCJe_Pli3afXd1ddVctWbn7tu251_FaMNk",
+          authDomain: "quizapp-fcfb5.firebaseapp.com",
+          projectId: "quizapp-fcfb5",
+          storageBucket: "quizapp-fcfb5.firebasestorage.app",
+          messagingSenderId: "180141145950",
+          appId: "1:180141145950:web:5e6de496aeb0b3a3fad9cf"
+        }}
+      />
+        
     </View>
   );
 };
