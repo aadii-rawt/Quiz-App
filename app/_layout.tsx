@@ -56,6 +56,21 @@ export default function RootLayout() {
             fontWeight: "bold",
           },
         }} />
+        <Stack.Screen name='register' options={{headerShown : true,title : "Register",
+           headerLeft: () => (
+            <MaterialIcons
+              name="arrow-back"
+              size={24}
+              color="black"
+              style={{ marginLeft: 16 }}
+              onPress={() => navigation.goBack()}
+            />
+          ),
+          headerTitleStyle: {
+            fontSize: 20,
+            fontWeight: "bold",
+          },
+        }} />
       </Stack>
       <StatusBar style="auto" />
 
