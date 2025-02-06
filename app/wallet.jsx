@@ -48,7 +48,7 @@ export default function Wallet() {
         const currentBalance = userSnap.data().wallet || 0;
 
         // Calculate new balance
-        const newBalance = currentBalance + amount;
+        const newBalance = currentBalance + +amount;
 
         // Update wallet balance
         await updateDoc(userRef, {

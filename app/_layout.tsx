@@ -86,6 +86,21 @@ export default function RootLayout() {
             fontWeight: "bold",
           },
         }} />
+        <Stack.Screen name='leaderboard' options={{headerShown : true,title : "Leaderboard",
+           headerLeft: () => (
+            <MaterialIcons
+              name="arrow-back"
+              size={24}
+              color="black"
+              style={{ marginLeft: 16 }}
+              // onPress={() => navigation.goBack()}
+            />
+          ),
+          headerTitleStyle: {
+            fontSize: 20,
+            fontWeight: "bold",
+          },
+        }} />
       </Stack>
       <StatusBar style="auto" />
 

@@ -1,27 +1,42 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, TouchableOpacity, ActivityIndicator, FlatList, StyleSheet, Image } from "react-native";
-// import { useNavigation } from "@react-navigation/native";
-// import { collection, getDocs } from "firebase/firestore";
-// import { db } from "../firebase";
 import Icon from "react-native-vector-icons/Ionicons";
-import { Link, useNavigation } from 'expo-router';
-import { collection, doc, getDoc, getDocs } from 'firebase/firestore';
+import { useNavigation } from 'expo-router';
+import { collection, getDocs } from 'firebase/firestore';
 import { db } from '@/firebase';
 import { useUserAuth } from "@/app/context/useAuthContext";
 
 const TodayCompetitions = () => {
     const navigation = useNavigation();
-    // const [competitions, setCompetitions] = useState([])
     const [competitions, setCompetitions] = useState([]);
     const [loading, setLoading] = useState(true);
     const [currentTime, setCurrentTime] = useState(new Date().getTime());
 
-    const { userData } = useUserAuth()
+    const { userData } = useUserAuth();
+
     const formatTime = (timestamp) => {
         const date = new Date(timestamp.seconds * 1000);
         return date.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true });
     };
+
+    // Function to calculate time left in minutes and seconds
+    const calculateTimeLeft = (startTime) => {
+        const timeDiff = startTime - currentTime;
+        if (timeDiff <= 0) return "00m 00s"; // If the competition has started or passed
+    
+        const hours = Math.floor(timeDiff / 3600000); // 3600000 ms in an hour
+        const minutes = Math.floor((timeDiff % 3600000) / 60000); // 60000 ms in a minute
+        const seconds = Math.floor((timeDiff % 60000) / 1000); // 1000 ms in a second
+    
+        if (hours > 0) {
+            return `${hours}h ${minutes.toString().padStart(2, "0")}m ${seconds.toString().padStart(2, "0")}s`;
+        } else {
+            return `${minutes.toString().padStart(2, "0")}m ${seconds.toString().padStart(2, "0")}s`;
+        }
+    };
+    
     useEffect(() => {
+        // Fetch competitions from Firestore
         const fetchCompetitions = async () => {
             try {
                 const competitionsRef = collection(db, "competitions");
@@ -53,19 +68,27 @@ const TodayCompetitions = () => {
         };
 
         fetchCompetitions();
-    });
+
+        // Update current time every second
+        const interval = setInterval(() => {
+            setCurrentTime(new Date().getTime());
+        }, 1000);
+
+        // Cleanup interval on component unmount
+        return () => clearInterval(interval);
+    }, []);
 
     const renderItem = ({ item }) => {
-        if (!item) return null; // P
+        if (!item) return null; // Ensure item is not null
+
         const isRegistered = item?.registeredUsers?.some(user => user.userId == userData?.userId);
         const startTime = item.startTime.seconds * 1000;
-        const hasStarted = currentTime >= startTime;
 
         return (
             <View style={styles.card}>
-                <Image source="https://t3.ftcdn.net/jpg/02/85/90/44/360_F_285904463_52tKiXp592qUhmg24eS3f4k1kGQSji3f.jpg" style={styles.thumbnail} />
+                <Image source={{uri: "https://t3.ftcdn.net/jpg/02/85/90/44/360_F_285904463_52tKiXp592qUhmg24eS3f4k1kGQSji3f.jpg"}} style={styles.thumbnail} />
                 <View style={styles.info}>
-                    <View >
+                    <View>
                         <Text style={styles.title}>{item.competitionName}</Text>
                         <View style={styles.details}>
                             <View style={styles.detailItem}>
@@ -78,14 +101,14 @@ const TodayCompetitions = () => {
                             </View>
                         </View>
                     </View>
-                    <View >
-                        <Text style={styles.timeLeftText}>53m 20s</Text>
+                    <View>
+                        <Text style={styles.timeLeftText}>{calculateTimeLeft(startTime)}</Text>
                         <Text style={styles.startTimeText}>{formatTime(item.startTime)}</Text>
                     </View>
                 </View>
 
                 {isRegistered ? (
-                    hasStarted ? (
+                    currentTime >= startTime ? (
                         <TouchableOpacity
                             style={{
                                 marginTop: 10,
@@ -100,7 +123,7 @@ const TodayCompetitions = () => {
                             <Text style={{ color: "#fff", fontWeight: "bold" }}>Play</Text>
                         </TouchableOpacity>
                     ) : (
-                        <Text style={{ color: "green", fontWeight: "bold", marginTop: 10,padding : 5 }}>
+                        <Text style={{ color: "green", fontWeight: "bold", marginTop: 10, padding: 5 }}>
                             ✅ Registered - Wait for game to start
                         </Text>
                     )
@@ -110,7 +133,7 @@ const TodayCompetitions = () => {
                             marginTop: 10,
                             backgroundColor: "#6200ea",
                             padding: 10,
-                            margin : 5,
+                            margin: 5,
                             borderRadius: 5,
                             alignItems: "center",
                         }}
@@ -123,15 +146,12 @@ const TodayCompetitions = () => {
         );
     };
 
-
-
     if (loading) {
         return <ActivityIndicator size="large" color="#6200ea" style={{ flex: 1, justifyContent: "center" }} />;
     }
 
     return (
         <View style={{ flex: 1, backgroundColor: "#f4f4f4", padding: 15 }}>
-
             {competitions.length > 0 ? (
                 <FlatList
                     data={competitions}
