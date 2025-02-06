@@ -1,16 +1,190 @@
-import React, { useState } from "react";
-import { View, Text, TouchableOpacity, TextInput, StyleSheet, Image, ScrollView } from "react-native";
+import React, { useState, useEffect } from "react";
+import { View, Text, Platform, TouchableOpacity, TextInput, StyleSheet, Image, ScrollView } from "react-native";
+import WebView from "react-native-webview";
+import { doc, getDoc, updateDoc } from 'firebase/firestore';
+import { db } from '../firebase';
+import { useUserAuth } from './context/useAuthContext';
+import { useNavigation } from 'expo-router';
 
 
 export default function Wallet() {
-  const [selectedAmount, setSelectedAmount] = useState("1000");
-  
+  const [selectedAmount, setSelectedAmount] = useState(500);
+
+  const [isLoading, setIsLoading] = useState(false);
+  const { user,userData } = useUserAuth();
+  const navigation = useNavigation()
+
+  // Function to save transaction to database
+  const saveTransaction = async (paymentData, amount) => {
+    try {
+      const response = await axios.post('YOUR_API_ENDPOINT/transactions', {
+        paymentId: paymentData.razorpay_payment_id,
+        amount: amount,
+        status: 'success',
+        timestamp: new Date(),
+        userId: 'USER_ID', // Replace with actual user ID from your auth system
+        paymentDetails: paymentData
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error saving transaction:', error);
+      throw error;
+    }
+  };
+
+  // Function to update user's wallet balance
+  const updateWalletBalance = async (amount) => {
+    console.log("update");
+
+    try {
+      // Get user document reference
+      const userRef = doc(db, 'users', user?.uid);
+
+      // Get current user data
+      const userSnap = await getDoc(userRef);
+
+      if (userSnap.exists()) {
+        // Get current wallet balance
+        const currentBalance = userSnap.data().wallet || 0;
+
+        // Calculate new balance
+        const newBalance = currentBalance + amount;
+
+        // Update wallet balance
+        await updateDoc(userRef, {
+          wallet: newBalance,
+          lastUpdated: new Date()
+        });
+
+        return newBalance;
+      } else {
+        throw new Error('User document not found');
+      }
+    } catch (error) {
+      console.error('Error updating wallet:', error);
+      throw error;
+    }
+  };
+
+
+  // Handle successful payment
+  const handlePaymentSuccess = async (paymentResponse, amount) => {
+    setIsLoading(true);
+    try {
+      // await saveTransaction(paymentResponse, amount);
+
+      // Update user's wallet balance
+      await updateWalletBalance(amount);
+
+      console.log("payment successfull");
+
+    } catch (error) {
+      console.log(
+        "Error",
+        "Payment was successful but there was an error updating your wallet. Please contact support.",
+        [{ text: "OK" }]
+      );
+    } finally {
+      setIsLoading(false);
+      // navigation.navigate("wallet")
+    }
+  };
+
+  const handlePayment = () => {
+    if (Platform.OS === 'web') {
+      const script = document.createElement('script');
+      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+      document.body.appendChild(script);
+
+      script.onload = () => {
+        const options = {
+          key: "rzp_test_0DA57OEHdt9n1D",
+          amount: selectedAmount * 100,
+          currency: "INR",
+          name: "Test Order",
+          description: "Buy BMW CAR",
+          handler: function (response) {
+            handlePaymentSuccess(response, selectedAmount);
+          },
+          prefill: {
+            email: 'xyz@gmail.com',
+            contact: '9999999999',
+            name: 'User 1'
+          },
+          theme: {
+            color: "#F37254"
+          },
+          // Simplified UPI configuration
+          config: {
+            display: {
+              preferences: {
+                show_default_blocks: true
+              }
+            }
+          },
+          // Enable UPI directly
+          upi: true
+        };
+
+        const paymentObject = new window.Razorpay(options);
+        paymentObject.open();
+      };
+    } else {
+      const htmlContent = `
+  <!DOCTYPE html>
+      <html>
+        <head>
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+        </head>
+        <body style="display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0;">
+          <script>
+            const options = {
+              key: 'rzp_test_0DA57OEHdt9n1D',
+              amount: ${selectedAmount * 100},
+              currency: 'INR',
+              name: 'Test Order',
+              description: 'Buy BMW CAR',
+              handler: function(response) {
+                window.ReactNativeWebView.postMessage(JSON.stringify(response));
+              },
+              prefill: {
+                email: 'xyz@gmail.com',
+                contact: '9999999999',
+                name: 'User 1'
+              },
+              theme: {
+                color: '#F37254'
+              }
+            };
+            const paymentObject = new Razorpay(options);
+            paymentObject.open();
+          </script>
+        </body>
+      </html>
+    `;
+
+      return (
+        <WebView
+          source={{ html: htmlContent }}
+          onMessage={(event) => {
+            const response = JSON.parse(event.nativeEvent.data);
+            handlePaymentSuccess(response, selectedAmount);
+
+          }}
+          style={{ flex: 1 }}
+        />
+      );
+    }
+  };
+
+
   return (
     <ScrollView style={styles.container}>
       {/* Balance Section */}
       <View style={styles.balanceContainer}>
         <Text style={styles.balanceLabel}>Available Balance</Text>
-        <Text style={styles.balanceAmount}>₹0</Text>
+        <Text style={styles.balanceAmount}>₹{userData?.wallet}</Text>
         {/* <Image source={require("./coins.png")} style={styles.coinImage} /> */}
       </View>
 
@@ -23,13 +197,13 @@ export default function Wallet() {
 
       {/* Add Money Section */}
       <View style={styles.addMoneyContainer}>
-        <Text style={styles.addMoneyTitle}>Add Money to Zepto Cash</Text>
+        <Text style={styles.addMoneyTitle}>Add Money to wallet</Text>
         <Text style={styles.enterAmount}>Enter Amount</Text>
-        <TextInput style={styles.input} value={`₹ ${selectedAmount}`} editable={false} />
-        
+        <TextInput style={styles.input}    keyboardType="numeric" value={selectedAmount} onChangeText={(text) => setSelectedAmount(text)}  />
+
         {/* Amount Selection */}
         <View style={styles.amountGrid}>
-          {["500", "1000", "2000", "5000"].map((amount) => (
+          {[500, 1000, 2000, 5000].map((amount) => (
             <TouchableOpacity
               key={amount}
               style={[styles.amountButton, selectedAmount === amount && styles.selectedAmount]}
@@ -44,7 +218,7 @@ export default function Wallet() {
         </View>
 
         {/* Add Balance Button */}
-        <TouchableOpacity style={styles.addBalanceButton}>
+        <TouchableOpacity onPress={handlePayment} style={styles.addBalanceButton}>
           <Text style={styles.addBalanceText}>Add Balance</Text>
         </TouchableOpacity>
       </View>
@@ -71,7 +245,7 @@ export default function Wallet() {
 // Feature Item Component
 const FeatureItem = ({ title, icon }) => (
   <View style={styles.featureItem}>
-     <Text style={styles.featureIcon}>{icon}</Text>
+    <Text style={styles.featureIcon}>{icon}</Text>
     <Text style={styles.featureText}>{title}</Text>
   </View>
 );
@@ -176,7 +350,7 @@ const styles = StyleSheet.create({
   },
   popularTag: {
     position: "absolute",
-    bottom: -10,
+    bottom: -7,
     backgroundColor: "#FF4D4D",
     color: "white",
     paddingHorizontal: 6,
@@ -229,7 +403,7 @@ const styles = StyleSheet.create({
   recentTransactions: {
     fontSize: 16,
     fontWeight: "bold",
-    marginTop: 20,
+    marginVertical: 20,
   },
 });
-  
+
