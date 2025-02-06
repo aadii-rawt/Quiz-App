@@ -212,7 +212,7 @@ export default function Wallet() {
               <Text style={[styles.amountText, selectedAmount === amount && styles.selectedText]}>
                 ₹{amount}
               </Text>
-              {amount === "1000" && <Text style={styles.popularTag}>POPULAR</Text>}
+              {amount === 1000 && <Text style={styles.popularTag}>POPULAR</Text>}
             </TouchableOpacity>
           ))}
         </View>

@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth, db } from '../../firebase';
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, onSnapshot } from "firebase/firestore";
 
 const usercontext = createContext()
 
@@ -25,16 +25,23 @@ export const UserContextProvider = ({ children }) => {
         return () => unsubscribe();
     }, []);
 
-    const fetchUser = async () => {
-        const userDocRef = doc(db, `users/${user?.uid}`);
-        const userSnapshot = await getDoc(userDocRef);
-        const userData = userSnapshot.data();
-        setUserData(userData);
-    }
-
     useEffect(() => {
-        fetchUser();
-    }, [user])
+        if (!user) return;
+
+        const userDocRef = doc(db, `users/${user.uid}`);
+
+        // Listen for real-time updates
+        const unsubscribeFirestore = onSnapshot(userDocRef, (docSnapshot) => {
+            if (docSnapshot.exists()) {
+                setUserData(docSnapshot.data());
+            } else {
+                setUserData(null);
+                console.log('No user data found');
+            }
+        });
+
+        return () => unsubscribeFirestore(); // Cleanup Firestore listener
+    }, [user]); // Runs when `user` changes
 
     return (
         <usercontext.Provider value={{ user, setUser,userData }}>

@@ -26,7 +26,7 @@ export default function RootLayout() {
     return null;
   }
 
-  // const navigation = useNavigation()
+  const navigation = useNavigation()
 
   return (
     <ThemeProvider value={DefaultTheme}>
@@ -64,6 +64,21 @@ export default function RootLayout() {
               color="black"
               style={{ marginLeft: 16 }}
               // onPress={() => navigation.goBack()}
+            />
+          ),
+          headerTitleStyle: {
+            fontSize: 20,
+            fontWeight: "bold",
+          },
+        }} />
+        <Stack.Screen name='wallet' options={{headerShown : true,title : "wallet",
+           headerLeft: () => (
+            <MaterialIcons
+              name="arrow-back"
+              size={24}
+              color="black"
+              style={{ marginLeft: 16 }}
+              onPress={() => navigation.goBack()}
             />
           ),
           headerTitleStyle: {
