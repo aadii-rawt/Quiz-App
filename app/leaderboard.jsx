@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
-
+// import {  } from "../assets/images";
 const Leaderboard = () => {
     const players = [
         { rank: 1, name: 'Davis Curtis', points: '2,569', flag: '🇵🇹', avatar: 'https://via.placeholder.com/50', isTop: true },
@@ -16,12 +16,13 @@ const Leaderboard = () => {
            
             
             {/* Tabs */}
-            {/* <View style={styles.tabs}>
-                <TouchableOpacity style={styles.activeTab}><Text style={styles.tabText}>Weekly</Text></TouchableOpacity>
-                <TouchableOpacity style={styles.inactiveTab}><Text style={styles.tabText}>All Time</Text></TouchableOpacity>
-            </View> */}
+            <View style={styles.tabs}>
+            <Image source='../assets/images/Podium.png' style={styles.avatar} />
+             
+            </View>
 
             {/* Leaderboard List */}
+
             <ScrollView style={styles.listContainer}>
                 {players.map((player, index) => (
                     <View key={index} style={styles.listItem}>
@@ -64,7 +65,7 @@ const styles = StyleSheet.create({
     tabs: {
         flexDirection: 'row',
         justifyContent: 'center',
-        marginVertical: 20,
+        marginVertical: 100,
     },
     activeTab: {
         backgroundColor: '#FFF',

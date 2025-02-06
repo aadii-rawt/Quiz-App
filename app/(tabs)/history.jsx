@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, FlatList, ActivityIndicator, StyleSheet } from "react-native";
+import { View, Text, FlatList, ActivityIndicator, StyleSheet, TouchableOpacity } from "react-native";
 import { doc, getDoc, getDocs, collection, query, where } from "firebase/firestore";
 import { useUserAuth } from "../context/useAuthContext";
 import { db } from "../../firebase";
+import { useNavigation } from "@react-navigation/native";
 
 export default function History() {
   const { userData } = useUserAuth(); // Get the current user
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigation = useNavigation()
 
   useEffect(() => {
     const fetchHistory = async () => {
@@ -84,17 +86,22 @@ export default function History() {
 
 function HistoryItem({ quiz }) {
   return (
-    <View style={styles.quizItem}>
-      <View style={styles.icon}>
-        <Text style={{ fontSize: 22, color: quiz.score > 50 ? "#28a745" : "#dc3545" }}>🏆</Text>
-      </View>
-      <View style={styles.textContainer}>
-        <Text style={styles.quizTitle}>{quiz.competitionName}</Text>
-        <Text style={styles.quizDate}>{new Date(quiz.startTime).toLocaleString()}</Text>
-        <Text style={[styles.quizScore, { color: quiz.score > 50 ? "#28a745" : "#dc3545" }]}>
-          Score: {quiz.score}
-        </Text>
-      </View>
+    <View>
+      <TouchableOpacity onPress={() => navigation.navigate("leaderboard")} >
+        <View style={styles.quizItem} >
+
+          <View style={styles.icon}>
+            <Text style={{ fontSize: 22, color: quiz.score > 50 ? "#28a745" : "#dc3545" }}>🏆</Text>
+          </View>
+          <View style={styles.textContainer}>
+            <Text style={styles.quizTitle}>{quiz.competitionName}</Text>
+            <Text style={styles.quizDate}>{new Date(quiz.startTime).toLocaleString()}</Text>
+            <Text style={[styles.quizScore, { color: quiz.score > 50 ? "#28a745" : "#dc3545" }]}>
+              Score: {quiz.score}
+            </Text>
+          </View>
+        </View>
+      </TouchableOpacity>
     </View>
   );
 }
