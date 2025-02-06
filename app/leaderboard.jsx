@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
-// import {  } from "../assets/images";
+import Podium from "../assets/images/Podium.png";
 const Leaderboard = () => {
     const players = [
         { rank: 1, name: 'Davis Curtis', points: '2,569', flag: '🇵🇹', avatar: 'https://via.placeholder.com/50', isTop: true },
@@ -13,12 +13,11 @@ const Leaderboard = () => {
 
     return (
         <View style={styles.container}>
-           
-            
+
+
             {/* Tabs */}
-            <View style={styles.tabs}>
-            <Image source='../assets/images/Podium.png' style={styles.avatar} />
-             
+            <View style={{display : "flex",alignItems : "center", justifyContent : "center"}}>
+                <Image source={Podium}  />
             </View>
 
             {/* Leaderboard List */}
@@ -26,14 +25,14 @@ const Leaderboard = () => {
             <ScrollView style={styles.listContainer}>
                 {players.map((player, index) => (
                     <View key={index} style={styles.listItem}>
-                        <View style={{display: "flex",flexDirection :"row", alignItems : 'center'}}>
-                        <Text style={styles.rank}>{player.rank}</Text>
-                        <Image source='https://img.freepik.com/free-photo/fun-3d-illustration-american-referee_183364-81231.jpg' style={styles.avatar} />
-                        {/* <Text style={styles.flag}>{player.flag}</Text> */}
-                        <Text style={styles.listName}>{player.name}</Text>
+                        <View style={{ display: "flex", flexDirection: "row", alignItems: 'center' }}>
+                            <Text style={styles.rank}>{player.rank}</Text>
+                            <Image source='https://img.freepik.com/free-photo/fun-3d-illustration-american-referee_183364-81231.jpg' style={styles.avatar} />
+                            {/* <Text style={styles.flag}>{player.flag}</Text> */}
+                            <Text style={styles.listName}>{player.name}</Text>
                         </View>
                         <Text style={styles.listPoints}>{player.points} points</Text>
-                    {/* </Text>} */}
+                        {/* </Text>} */}
                     </View>
                 ))}
             </ScrollView>
@@ -65,7 +64,7 @@ const styles = StyleSheet.create({
     tabs: {
         flexDirection: 'row',
         justifyContent: 'center',
-        marginVertical: 100,
+        marginVertical: 10,
     },
     activeTab: {
         backgroundColor: '#FFF',
@@ -95,7 +94,7 @@ const styles = StyleSheet.create({
     listItem: {
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent : "space-between",
+        justifyContent: "space-between",
         paddingVertical: 10,
         borderBottomWidth: 1,
         borderBottomColor: '#ddd',
@@ -119,7 +118,7 @@ const styles = StyleSheet.create({
     listName: {
         flex: 1,
         fontSize: 16,
-        fontWeight : "500",
+        fontWeight: "500",
         color: '#333',
     },
     listPoints: {
