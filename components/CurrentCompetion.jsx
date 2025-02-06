@@ -100,7 +100,7 @@ const TodayCompetitions = () => {
                             <Text style={{ color: "#fff", fontWeight: "bold" }}>Play</Text>
                         </TouchableOpacity>
                     ) : (
-                        <Text style={{ color: "green", fontWeight: "bold", marginTop: 10 }}>
+                        <Text style={{ color: "green", fontWeight: "bold", marginTop: 10,padding : 5 }}>
                             ✅ Registered - Wait for game to start
                         </Text>
                     )
