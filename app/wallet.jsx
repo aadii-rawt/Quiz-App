@@ -11,7 +11,7 @@ export default function Wallet() {
   const [selectedAmount, setSelectedAmount] = useState(500);
 
   const [isLoading, setIsLoading] = useState(false);
-  const { user,userData } = useUserAuth();
+  const { user, userData } = useUserAuth();
   const navigation = useNavigation()
 
   // Function to save transaction to database
@@ -65,7 +65,6 @@ export default function Wallet() {
       throw error;
     }
   };
-
 
   // Handle successful payment
   const handlePaymentSuccess = async (paymentResponse, amount) => {
@@ -199,7 +198,7 @@ export default function Wallet() {
       <View style={styles.addMoneyContainer}>
         <Text style={styles.addMoneyTitle}>Add Money to wallet</Text>
         <Text style={styles.enterAmount}>Enter Amount</Text>
-        <TextInput style={styles.input}    keyboardType="numeric" value={selectedAmount} onChangeText={(text) => setSelectedAmount(text)}  />
+        <TextInput style={styles.input} keyboardType="numeric" value={selectedAmount} onChangeText={(text) => setSelectedAmount(text)} />
 
         {/* Amount Selection */}
         <View style={styles.amountGrid}>
