@@ -27,6 +27,9 @@ const Home = () => {
     // useEffect(() => {
     //     fetchUser();
     // }, [user])
+    console.log();
+    console.log('userDatar', user);
+    
 
     return (
         <View style={styles.container}>
@@ -42,13 +45,13 @@ const Home = () => {
                     </Link>
                     <View style={{ display: 'flex', gap: '5px', flexDirection: 'row', alignItems: 'center' }}>
                         <Text style={styles.greeting}>Hello!</Text>
-                        <Text style={styles.userName}>{userData?.username}</Text>
+                        <Text style={styles.userName}>{user?.username}</Text>
                     </View>
                 </View>
                 <View style={styles.coins}>
                     <TouchableOpacity style={{ display: 'flex', flexDirection: "row", }} onPress={() => navigation.navigate("wallet")}>
                         <MaterialIcons name="account-balance-wallet" size={24} color="white" />
-                        <Text style={styles.coinText} >{userData?.wallet}</Text>
+                        <Text style={styles.coinText} >{user?.wallet}</Text>
 
                     </TouchableOpacity>
                 </View>
