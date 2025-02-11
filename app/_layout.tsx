@@ -26,7 +26,8 @@ export default function RootLayout() {
     return null;
   }
 
-  const navigation = useNavigation()
+  // === throws error when opened in mobile
+  // const navigation = useNavigation()
 
   return (
     <ThemeProvider value={DefaultTheme}>
