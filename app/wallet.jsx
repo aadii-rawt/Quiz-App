@@ -11,7 +11,13 @@ export default function Wallet() {
   const [selectedAmount, setSelectedAmount] = useState(500);
 
   const [isLoading, setIsLoading] = useState(false);
-  const { user,userData } = useUserAuth();
+
+  const [showWebView, setShowWebView] = useState(false);
+  const [razorpayUrl, setRazorpayUrl] = useState("");
+  
+  const { user, userData } = useUserAuth();
+  console.log(user);
+  
   const navigation = useNavigation()
 
   // Function to save transaction to database
@@ -38,14 +44,14 @@ export default function Wallet() {
 
     try {
       // Get user document reference
-      const userRef = doc(db, 'users', user?.uid);
+      const userRef = doc(db, 'users', user?.userId);
 
       // Get current user data
       const userSnap = await getDoc(userRef);
 
       if (userSnap.exists()) {
         // Get current wallet balance
-        const currentBalance = userSnap.data().wallet || 0;
+        const currentBalance = userSnap?.data()?.wallet || 0;        
 
         // Calculate new balance
         const newBalance = currentBalance + +amount;
@@ -90,48 +96,97 @@ export default function Wallet() {
     }
   };
 
+  // const handlePayment = () => {
+  //   if (Platform.OS === 'web') {
+  //     const script = document.createElement('script');
+  //     script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+  //     document.body.appendChild(script);
+
+  //     script.onload = () => {
+  //       const options = {
+  //         key: "rzp_test_0DA57OEHdt9n1D",
+  //         amount: selectedAmount * 100,
+  //         currency: "INR",
+  //         name: "Test Order",
+  //         description: "Buy BMW CAR",
+  //         handler: function (response) {
+  //           handlePaymentSuccess(response, selectedAmount);
+  //         },
+  //         prefill: {
+  //           email: 'xyz@gmail.com',
+  //           contact: '9999999999',
+  //           name: 'User 1'
+  //         },
+  //         theme: {
+  //           color: "#F37254"
+  //         },
+  //         // Simplified UPI configuration
+  //         config: {
+  //           display: {
+  //             preferences: {
+  //               show_default_blocks: true
+  //             }
+  //           }
+  //         },
+  //         // Enable UPI directly
+  //         upi: true
+  //       };
+
+  //       const paymentObject = new window.Razorpay(options);
+  //       paymentObject.open();
+  //     };
+  //   } else {
+  //     const htmlContent = `
+  // <!DOCTYPE html>
+  //     <html>
+  //       <head>
+  //         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  //         <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  //       </head>
+  //       <body style="display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0;">
+  //         <script>
+  //           const options = {
+  //             key: 'rzp_test_0DA57OEHdt9n1D',
+  //             amount: ${selectedAmount * 100},
+  //             currency: 'INR',
+  //             name: 'Test Order',
+  //             description: 'Buy BMW CAR',
+  //             handler: function(response) {
+  //               window.ReactNativeWebView.postMessage(JSON.stringify(response));
+  //             },
+  //             prefill: {
+  //               email: 'xyz@gmail.com',
+  //               contact: '9999999999',
+  //               name: 'User 1'
+  //             },
+  //             theme: {
+  //               color: '#F37254'
+  //             }
+  //           };
+  //           const paymentObject = new Razorpay(options);
+  //           paymentObject.open();
+  //         </script>
+  //       </body>
+  //     </html>
+  //   `;
+
+  //     return (
+  //       <WebView
+  //         source={{ html: htmlContent }}
+  //         onMessage={(event) => {
+  //           const response = JSON.parse(event.nativeEvent.data);
+  //           handlePaymentSuccess(response, selectedAmount);
+
+  //         }}
+  //         style={{ flex: 1 }}
+  //       />
+  //     );
+  //   }
+  // };
+
   const handlePayment = () => {
-    if (Platform.OS === 'web') {
-      const script = document.createElement('script');
-      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
-      document.body.appendChild(script);
-
-      script.onload = () => {
-        const options = {
-          key: "rzp_test_0DA57OEHdt9n1D",
-          amount: selectedAmount * 100,
-          currency: "INR",
-          name: "Test Order",
-          description: "Buy BMW CAR",
-          handler: function (response) {
-            handlePaymentSuccess(response, selectedAmount);
-          },
-          prefill: {
-            email: 'xyz@gmail.com',
-            contact: '9999999999',
-            name: 'User 1'
-          },
-          theme: {
-            color: "#F37254"
-          },
-          // Simplified UPI configuration
-          config: {
-            display: {
-              preferences: {
-                show_default_blocks: true
-              }
-            }
-          },
-          // Enable UPI directly
-          upi: true
-        };
-
-        const paymentObject = new window.Razorpay(options);
-        paymentObject.open();
-      };
-    } else {
-      const htmlContent = `
-  <!DOCTYPE html>
+    const htmlContent = `
+      <!DOCTYPE html>
       <html>
         <head>
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -140,105 +195,108 @@ export default function Wallet() {
         <body style="display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0;">
           <script>
             const options = {
-              key: 'rzp_test_0DA57OEHdt9n1D',
+              key: "rzp_test_0DA57OEHdt9n1D",
               amount: ${selectedAmount * 100},
-              currency: 'INR',
-              name: 'Test Order',
-              description: 'Buy BMW CAR',
+              currency: "INR",
+              name: "Test Order",
+              description: "Wallet Recharge",
               handler: function(response) {
                 window.ReactNativeWebView.postMessage(JSON.stringify(response));
               },
               prefill: {
-                email: 'xyz@gmail.com',
-                contact: '9999999999',
-                name: 'User 1'
+                email: "xyz@gmail.com",
+                contact: "9999999999",
+                name: "User 1"
               },
-              theme: {
-                color: '#F37254'
-              }
+              theme: { color: "#F37254" }
             };
-            const paymentObject = new Razorpay(options);
-            paymentObject.open();
+            const rzp1 = new Razorpay(options);
+            rzp1.open();
           </script>
         </body>
       </html>
     `;
 
-      return (
+    setRazorpayUrl(htmlContent);
+    setShowWebView(true);
+  };
+
+  return (
+    <View style={styles.container}>
+      {showWebView ? (
         <WebView
-          source={{ html: htmlContent }}
+          originWhitelist={["*"]}
+          source={{ html: razorpayUrl }}
           onMessage={(event) => {
             const response = JSON.parse(event.nativeEvent.data);
+            console.log("Payment Success:", response);
             handlePaymentSuccess(response, selectedAmount);
-
+            setShowWebView(false);
           }}
           style={{ flex: 1 }}
         />
-      );
-    }
-  };
+      ) : (
+          <ScrollView>
+            {/* Balance Section */}
+            <View style={styles.balanceContainer}>
+              <Text style={styles.balanceLabel}>Available Balance</Text>
+              <Text style={styles.balanceAmount}>₹ {user?.wallet}</Text>
+              {/* <Image source={require("./coins.png")} style={styles.coinImage} /> */}
+            </View>
 
+            {/* Features Row */}
+            <View style={styles.featuresRow}>
+              <FeatureItem title="Easy & Fast Payments" icon="⚡" />
+              <FeatureItem title="Instant Refunds" icon="💰" />
+              <FeatureItem title="Exclusive Offers" icon="🎉" />
+            </View>
 
-  return (
-    <ScrollView style={styles.container}>
-      {/* Balance Section */}
-      <View style={styles.balanceContainer}>
-        <Text style={styles.balanceLabel}>Available Balance</Text>
-        <Text style={styles.balanceAmount}>₹{userData?.wallet}</Text>
-        {/* <Image source={require("./coins.png")} style={styles.coinImage} /> */}
-      </View>
+            {/* Add Money Section */}
+            <View style={styles.addMoneyContainer}>
+              <Text style={styles.addMoneyTitle}>Add Money to wallet</Text>
+              <Text style={styles.enterAmount}>Enter Amount</Text>
+              <TextInput style={styles.input} keyboardType="numeric" value={selectedAmount?.toString()} onChangeText={(text) => setSelectedAmount(text)} />
 
-      {/* Features Row */}
-      <View style={styles.featuresRow}>
-        <FeatureItem title="Easy & Fast Payments" icon="⚡" />
-        <FeatureItem title="Instant Refunds" icon="💰" />
-        <FeatureItem title="Exclusive Offers" icon="🎉" />
-      </View>
+              {/* Amount Selection */}
+              <View style={styles.amountGrid}>
+                {[500, 1000, 2000, 5000].map((amount) => (
+                  <TouchableOpacity
+                    key={amount}
+                    style={[styles.amountButton, selectedAmount === amount && styles.selectedAmount]}
+                    onPress={() => setSelectedAmount(amount)}
+                  >
+                    <Text style={[styles.amountText, selectedAmount === amount && styles.selectedText]}>
+                      ₹{amount}
+                    </Text>
+                    {amount === 1000 && <Text style={styles.popularTag}>POPULAR</Text>}
+                  </TouchableOpacity>
+                ))}
+              </View>
 
-      {/* Add Money Section */}
-      <View style={styles.addMoneyContainer}>
-        <Text style={styles.addMoneyTitle}>Add Money to wallet</Text>
-        <Text style={styles.enterAmount}>Enter Amount</Text>
-        <TextInput style={styles.input}    keyboardType="numeric" value={selectedAmount} onChangeText={(text) => setSelectedAmount(text)}  />
+              {/* Add Balance Button */}
+              <TouchableOpacity onPress={handlePayment} style={styles.addBalanceButton}>
+                <Text style={styles.addBalanceText}>Add Balance</Text>
+              </TouchableOpacity>
+            </View>
 
-        {/* Amount Selection */}
-        <View style={styles.amountGrid}>
-          {[500, 1000, 2000, 5000].map((amount) => (
-            <TouchableOpacity
-              key={amount}
-              style={[styles.amountButton, selectedAmount === amount && styles.selectedAmount]}
-              onPress={() => setSelectedAmount(amount)}
-            >
-              <Text style={[styles.amountText, selectedAmount === amount && styles.selectedText]}>
-                ₹{amount}
-              </Text>
-              {amount === 1000 && <Text style={styles.popularTag}>POPULAR</Text>}
-            </TouchableOpacity>
-          ))}
-        </View>
+            {/* Gift Card Section */}
+            <View style={styles.giftCardContainer}>
+              <Text style={styles.giftCardText}>🎁 Have a Gift Card?</Text>
+              <TouchableOpacity style={styles.addCardButton}>
+                <Text style={styles.addCardText}>Add Card</Text>
+              </TouchableOpacity>
+            </View>
 
-        {/* Add Balance Button */}
-        <TouchableOpacity onPress={handlePayment} style={styles.addBalanceButton}>
-          <Text style={styles.addBalanceText}>Add Balance</Text>
-        </TouchableOpacity>
-      </View>
+            {/* Terms & Conditions */}
+            <Text style={styles.termsText}>
+              By continuing, you agree to <Text style={styles.readMore}>Terms of Use & Privacy Policy</Text>
+            </Text>
 
-      {/* Gift Card Section */}
-      <View style={styles.giftCardContainer}>
-        <Text style={styles.giftCardText}>🎁 Have a Gift Card?</Text>
-        <TouchableOpacity style={styles.addCardButton}>
-          <Text style={styles.addCardText}>Add Card</Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Terms & Conditions */}
-      <Text style={styles.termsText}>
-        By continuing, you agree to <Text style={styles.readMore}>Terms of Use & Privacy Policy</Text>
-      </Text>
-
-      {/* Recent Transactions */}
-      <Text style={styles.recentTransactions}>Recent Transactions</Text>
-    </ScrollView>
+            {/* Recent Transactions */}
+            <Text style={styles.recentTransactions}>Recent Transactions</Text>
+          </ScrollView>
+      )}
+    </View>
   );
 }
 
@@ -256,6 +314,9 @@ const styles = StyleSheet.create({
     backgroundColor: "#F8F8F8",
     paddingHorizontal: 16,
     paddingTop: 20,
+  },
+  container2: {
+    paddingHorizontal: 16,
   },
   header: {
     fontSize: 20,
@@ -406,4 +467,3 @@ const styles = StyleSheet.create({
     marginVertical: 20,
   },
 });
-
