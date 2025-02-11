@@ -36,58 +36,58 @@ const Login = () => {
   // }
 
   // Login for Mobile App
-  // const handleLogin = async () => {
-  //   try {
-  //     const usersRef = collection(db, "users");
-  //     const q = query(usersRef, where("phoneNumber", "==", phoneNumber));
-  //     const querySnapshot = await getDocs(q);
-
-  //     if (querySnapshot.empty) {
-  //       setError("User not found");
-  //       return;
-  //     }
-
-  //     if (!recaptchaVerifier.current) {
-  //       console.error("Recaptcha verifier is not initialized");
-  //       return;
-  //     }
-
-  //     const confirmationResult = await signInWithPhoneNumber(auth, phoneNumber, recaptchaVerifier.current);
-  //     setConfirmation(confirmationResult);
-  //     console.log(confirmationResult);
-  //   } catch (error) {
-  //     console.error("Login Error:", error);
-  //   }
-  // };
-
-  // Login For Web
   const handleLogin = async () => {
     try {
-      // Step 1: Check if phone number exists in Firestore
       const usersRef = collection(db, "users");
       const q = query(usersRef, where("phoneNumber", "==", phoneNumber));
       const querySnapshot = await getDocs(q);
 
       if (querySnapshot.empty) {
-        setError("can't Find user")
+        setError("User not found");
         return;
       }
 
-      // Step 2: Proceed with OTP verification
-      const recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-        'size': 'normal',
-        'callback': (response) => {
-          console.log('Recaptcha verified:', response);
-        },
-      });
+      if (!recaptchaVerifier.current) {
+        console.error("Recaptcha verifier is not initialized");
+        return;
+      }
 
-      const confirmationResult = await signInWithPhoneNumber(auth, phoneNumber, recaptchaVerifier);
+      const confirmationResult = await signInWithPhoneNumber(auth, phoneNumber, recaptchaVerifier.current);
       setConfirmation(confirmationResult);
       console.log(confirmationResult);
     } catch (error) {
-      console.log(error);
+      console.error("Login Error:", error);
     }
   };
+
+  // Login For Web
+  // const handleLogin = async () => {
+  //   try {
+  //     // Step 1: Check if phone number exists in Firestore
+  //     const usersRef = collection(db, "users");
+  //     const q = query(usersRef, where("phoneNumber", "==", phoneNumber));
+  //     const querySnapshot = await getDocs(q);
+
+  //     if (querySnapshot.empty) {
+  //       setError("can't Find user")
+  //       return;
+  //     }
+
+  //     // Step 2: Proceed with OTP verification
+  //     const recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+  //       'size': 'normal',
+  //       'callback': (response) => {
+  //         console.log('Recaptcha verified:', response);
+  //       },
+  //     });
+
+  //     const confirmationResult = await signInWithPhoneNumber(auth, phoneNumber, recaptchaVerifier);
+  //     setConfirmation(confirmationResult);
+  //     console.log(confirmationResult);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
 
 
 
@@ -135,7 +135,7 @@ const Login = () => {
         </> :
         <OtpVerification confirmation={confirmation} phoneNumber={phoneNumber} type='login' />}
         
-      {/* <FirebaseRecaptchaVerifierModal
+      <FirebaseRecaptchaVerifierModal
         ref={recaptchaVerifier}
         firebaseConfig={{
           apiKey: "AIzaSyCJe_Pli3afXd1ddVctWbn7tu251_FaMNk",
@@ -145,7 +145,7 @@ const Login = () => {
           messagingSenderId: "180141145950",
           appId: "1:180141145950:web:5e6de496aeb0b3a3fad9cf"
         }}
-      /> */}
+      />
     </View>
   );
 };
