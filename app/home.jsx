@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, SafeAreaView } from 'react-native';
 import { MaterialIcons, FontAwesome5, Ionicons, Entypo } from '@expo/vector-icons';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import Slider from '../components/Slider';
@@ -12,10 +12,9 @@ import { db } from '../firebase';
 
 const Home = () => {
 
-    const { user,userData } = useUserAuth();
+    const { user, userData } = useUserAuth();
     // const [userData, setUserData] = useState();
     const navigation = useNavigation()
-
     // const fetchUser = async () => {
     //     const userDocRef = doc(db, `users/${user?.uid}`);
     //     const userSnapshot = await getDoc(userDocRef);
@@ -23,7 +22,7 @@ const Home = () => {
     //     setUserData(userData);
     //     console.log(userData);
     // }
-    
+
     // useEffect(() => {
     //     fetchUser();
     // }, [user])
@@ -32,7 +31,8 @@ const Home = () => {
     
 
     return (
-        <View style={styles.container}>
+
+        <View style={styles.safeContainer}>
             {/* Header */}
             <View style={styles.header}>
                 <View style={styles.profile}
@@ -148,6 +148,7 @@ const Home = () => {
 };
 
 const styles = StyleSheet.create({
+   
     container: {
         flex: 1,
         backgroundColor: '#f8f8f8',

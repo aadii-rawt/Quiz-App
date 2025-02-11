@@ -72,7 +72,6 @@ export default function Wallet() {
     }
   };
 
-
   // Handle successful payment
   const handlePaymentSuccess = async (paymentResponse, amount) => {
     setIsLoading(true);

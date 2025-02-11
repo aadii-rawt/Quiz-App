@@ -7,6 +7,8 @@ import { useEffect } from 'react';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import {UserContextProvider} from '@/app/context/useAuthContext'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { StyleSheet } from 'react-native';
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
@@ -104,6 +106,7 @@ export default function RootLayout() {
         }} />
       </Stack>
       <StatusBar style="auto" />
+
 
       </UserContextProvider>
     </ThemeProvider>
